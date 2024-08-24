@@ -1,0 +1,20 @@
+<div class="rounded-md bg-navy flex flex-col w-full h-full">
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+    <div class="slot border-b border-light-navy flex-1">&nbsp;</div>
+</div>
