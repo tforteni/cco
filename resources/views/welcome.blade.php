@@ -145,6 +145,7 @@
         <p class="text-tahini text-6xl font-schoolbook">Welcome</p>
         <p class="text-tahini text-2xl">to the</p>
         <p class="text-tahini text-9xl font-schoolbook">Coily Curly Office</p>
+        <p class="pt-10 text-light text-xl font-schoolbook">Sponsored by L'Oreal</p>
     </div>
     <div id="para1" class="text-xl opacity-0 transition duration-700 ease-in-out mt-60 flex flex-col justify-center items-center">
         <p class="text-tahini font-semibold"> Discover new hairstyles, braiders near you, and a community of like-minded people who love their hair!  </p>
