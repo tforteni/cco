@@ -31,10 +31,6 @@ Route::get('/braider-profile', function () {
     return view('braider-profile', ['braider' => $braider]);
 })->middleware(['auth', 'verified']);
 
-
-
-
-
 Route::get('/calendar', function () {
     return view('calendar');
 })->middleware(['auth', 'verified'])->name('calendar');
