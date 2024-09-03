@@ -28,7 +28,7 @@
     translate: 610px;
     transform: translateY(90px);
     rotate: -30deg;
-    z-index:2;
+    z-index:3;
 }
 
 .off-screen3 {
@@ -42,7 +42,7 @@
     translate: 500px;
     transform: translateY(100px);
     rotate: 10deg;
-    z-index:1;
+    z-index:2;
 }
 
 .off-screen4 {
@@ -56,7 +56,7 @@
     translate: 800px;
     transform: translateY(50px);
     rotate: -10deg;
-    z-index:0;
+    z-index:1;
 }
 
 .off-screen5 {
@@ -70,7 +70,7 @@
     translate: 520px;
     transform: translateY(-200px);
     rotate: -10deg;
-    z-index:3;
+    z-index:4;
 }
 
 .off-screen6 {
@@ -84,7 +84,7 @@
     translate: 1040px;
     transform: translateY(-100px);
     rotate: 5deg;
-    z-index:3;
+    z-index:4;
 }
 
 .discover-braiders{
