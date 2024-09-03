@@ -90,21 +90,21 @@
 .discover-braiders{
     position: absolute;
     translate: 940px;
-    transform: translateY(600px);
+    transform: translateY(610px);
     rotate: 0deg;
 }
 
 .student-ambassador{
     position: absolute;
     translate: 250px;
-    transform: translateY(1170px) scale(1.2);
+    transform: translateY(1180px) scale(1.2);
     rotate: 0deg;
 }
 
 .learn-events {
     position: absolute;
     translate: 950px;
-    transform: translateY(1370px);
+    transform: translateY(1380px);
     rotate: 0deg;
 }
 
@@ -147,7 +147,7 @@
         <p class="text-tahini text-9xl font-schoolbook">Coily Curly Office</p>
         <p class="pt-10 text-light text-4xl font-schoolbook">Sponsored by L'Oreal</p>
     </div>
-    <div id="para1" class="text-xl opacity-0 transition duration-700 ease-in-out mt-60 flex flex-col justify-center items-center">
+    <div id="para1" class="text-xl opacity-0 transition duration-700 ease-in-out mt-40 flex flex-col justify-center items-center">
         <p class="text-tahini font-semibold"> Discover new hairstyles, braiders near you, and a community of like-minded people who love their hair!  </p>
     </div>
     <div id="para2" class="mt-60 ml-80 opacity-0 transition duration-700 ease-in-out">
@@ -159,7 +159,7 @@
     <div id="para4" class="mt-80 ml-80 opacity-0 transition duration-700 ease-in-out">
         <a href="/calendar" class="text-link text-tahini text-4xl font-schoolbook underline-on-hover">Learn about upcoming events</a>
     </div>
-    <div class="mt-80 flex flex-col justify-center items-center">
+    <div class="mt-60 flex flex-col justify-center items-center">
     </div>
 </x-layout>
 

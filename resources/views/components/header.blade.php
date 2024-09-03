@@ -3,11 +3,12 @@
     <div class="flex lg:flex-1">
       <a href="/" class="-m-1.5 p-1.5">
         <span class="sr-only">Your Company</span>
-        <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="">
+        <img class="h-20 w-auto" src="{{ asset('images/logo.JPEG') }}" alt="">
       </a>
     </div>
   
     <div class="hidden lg:flex lg:gap-x-12">
+    <x-top-nav-link href="/loreal" :active="request()->segment(1) == 'loreal' ? true : false">About L'Oreal</x-top-nav-link>
       <x-top-nav-link href="/braiders" :active="request()->segment(1) == 'braiders' ? true : false">Braiders</x-top-nav-link>
       <x-top-nav-link href="/calendar" :active="request()->is('calendar')">Calendar</x-top-nav-link>
       <x-top-nav-link href="/ambassadors" :active="request()->is('ambassadors')">Ambassadors</x-top-nav-link>

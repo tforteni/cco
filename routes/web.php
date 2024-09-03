@@ -39,6 +39,10 @@ Route::get('/studentpicks', function () {
     return view('studentpicks');
 })->name('studentpicks');
 
+Route::get('/loreal', function () {
+    return view('loreal');
+})->name('loreal');
+
 Route::get('/ambassadors', function () {
     return view('ambassadors');
 })->middleware(['auth', 'verified'])->name('ambassadors');

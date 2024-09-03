@@ -46,6 +46,16 @@
             </div>
             <div class="p-4 space-y-4 text-tahini bg-light-navy rounded-md border-dark-tahini border-2">
                 <div class="flex flex-col items-center">
+                    <p class="text-xl font-semibold">Schedule an Appointment</p>
+                </div>
+                @if($braider->share_email)
+                <div class="flex flex-col items-center">
+                    <p>CALENDLY LINK HERE</p>
+                </div>
+                @endif
+            </div>
+            <div class="p-4 space-y-4 text-tahini bg-light-navy rounded-md border-dark-tahini border-2">
+                <div class="flex flex-col items-center">
                     <p class="text-xl font-semibold">Reviews</p>
                 </div>
                 <div>
@@ -61,27 +71,6 @@
                     <p class="border-l-4 border-dark-tahini pl-4">Kind of expensive but worth it I think.</p>
                 </div>
             </div>
-            <div class="p-4 space-y-4 text-tahini bg-light-navy rounded-md border-dark-tahini border-2">
-                <div class="flex flex-col items-center">
-                    <p class="text-xl font-semibold">Schedule an Appointment</p>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="space-y-3">
-                        @foreach($alldays as $day)
-                            @if(in_array($day, $available_days))
-                                <x-radio-button>{{$day}}</x-radio-button>
-                            @endif
-                        @endforeach
-                    </div>
-                    <div>Times</div>
-                </div>
-                @if($braider->share_email)
-                <div class="flex flex-col items-center">
-                    <p>None of the available times work? Reach out to {{$braider->user->name}} to set something up: {{$braider->user->email}}!</p>
-                    <p class="text-xs">Remember that braiders have published their preferred times so there is no guarantee a time not listed here will be available.</p>
-                </div>
-                @endif
-        </div>
         </div>
     </div>
 </x-layout>
