@@ -20,6 +20,7 @@
     transform: translateY(-120px) scale(0.8);
 }
 
+
 .work1 {
     z-index: 4;
 }

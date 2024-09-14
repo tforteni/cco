@@ -39,9 +39,13 @@ Route::get('/studentpicks', function () {
     return view('studentpicks');
 })->name('studentpicks');
 
-Route::get('/loreal', function () {
-    return view('loreal');
-})->name('loreal');
+Route::get('/sponsors', function () {
+    return view('sponsors');
+})->name('sponsors');
+
+Route::get('/about-coco', function () {
+    return view('about-coco');
+})->name('about-coco');
 
 Route::get('/ambassadors', function () {
     return view('ambassadors');
