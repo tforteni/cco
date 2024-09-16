@@ -2,7 +2,14 @@
 
 .photo {
     transition: translate 1.5s ease, rotate 1.5s ease;
+    z-index: 1; /* Default z-index for images */
 }   
+
+/* Text section (The Coily Curly Office) */
+.welcome-text {
+    z-index: 10; /* Make sure the text is on top */
+    position: relative; /* Ensure it stays in the flow and above images */
+}
 
 .off-screen1 {
     position: absolute;
@@ -12,9 +19,10 @@
 
 .on-screen1 {
     position: absolute;
-    translate: 400px;
+    translate: 300px; /* Adjust this to prevent overlap */
     transform: translateY(200px);
     rotate: 30deg;
+    z-index: 1; /* Ensure image has a lower z-index than text */
 }
 
 .off-screen2 {
@@ -132,12 +140,14 @@
 </style>
 
 <x-layout>
-    <div class="absolute">
+<div class="absolute">
         @for($x = 1; $x < 7; $x++)
             @if($x == 2 || $x == 3)
-            <img id="photo{{$x}}" class="h-60 w-auto photo off-screen{{$x}}" src="images/photo{{$x}}.jpg" alt="">
+            <!-- Adding the paragraph-image class to photo3 since it's related to a paragraph -->
+            <img id="photo{{$x}}" class="h-60 w-auto photo off-screen{{$x}} paragraph-image" src="images/photo{{$x}}.jpg" alt="">
             @else
-            <img id="photo{{$x}}" class="h-80 w-auto photo off-screen{{$x}}" src="images/photo{{$x}}.jpg" alt="">
+            <!-- Adding the paragraph-image class to photo4 since it's related to a paragraph -->
+            <img id="photo{{$x}}" class="h-80 w-auto photo off-screen{{$x}} @if($x == 4) paragraph-image @endif" src="images/photo{{$x}}.jpg" alt="">
             @endif
         @endfor
     </div>
@@ -145,7 +155,7 @@
         <p class="text-tahini text-6xl font-schoolbook">Welcome</p>
         <p class="text-tahini text-2xl">to the</p>
         <p class="text-tahini text-9xl font-schoolbook">Coily Curly Office</p>
-        <a href="/loreal" class="pt-10 text-light text-4xl font-schoolbook text-link underline-on-hover">Sponsored by L'Oreal</a>
+        <a href="/sponsors" class="pt-10 text-light text-4xl font-schoolbook text-link underline-on-hover">Sponsored by L'Oreal</a>
     </div>
     <div id="para1" class="text-xl opacity-0 transition duration-700 ease-in-out mt-40 flex flex-col justify-center items-center">
         <p class="text-tahini font-semibold"> Discover new hairstyles, braiders near you, and a community of like-minded people who love their hair!  </p>
@@ -154,7 +164,7 @@
         <a href="/braiders" class="text-link text-tahini text-4xl font-schoolbook underline-on-hover" >Find braiders on campus</a>
     </div>
     <div id="para3" class="mt-80 ml-80 pl-80 opacity-0 transition duration-700 ease-in-out">
-        <a href="/ambassadors"class="text-link text-tahini text-4xl font-schoolbook underline-on-hover">Become a student abassador</a>
+        <a href="/ambassadors"class="text-link text-tahini text-4xl font-schoolbook underline-on-hover">Become a student ambassador</a>
     </div>
     <div id="para4" class="mt-80 ml-80 opacity-0 transition duration-700 ease-in-out">
         <a href="/calendar" class="text-link text-tahini text-4xl font-schoolbook underline-on-hover">Learn about upcoming events</a>
