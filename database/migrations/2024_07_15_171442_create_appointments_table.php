@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('braiders')->cascadeOnDelete();
-            $table->foreignId('braider_id')->constrained('braiders')->cascadeOnDelete();
-            $table->enum('day', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
-            $table->string('start_time');
-            $table->string('end_time');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete(); // Regular user making the appointment
+            $table->foreignId('braider_id')->constrained('braiders')->cascadeOnDelete(); // Braider who is booked
+            $table->foreignId('availability_id')->constrained('availabilities')->cascadeOnDelete(); // Link to availability time slot
+            $table->enum('day', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']); // Day of appointment
+            $table->time('start_time'); 
+            $table->time('end_time');   
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
