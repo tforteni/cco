@@ -8,11 +8,15 @@
     </div>
   
     <div class="hidden lg:flex lg:gap-x-12">
-    <x-top-nav-link href="/loreal" :active="request()->segment(1) == 'loreal' ? true : false">About L'Oreal</x-top-nav-link>
+    <x-top-nav-link href="/about-coco" :active="request()->segment(1) == 'about-coco' ? true : false">Who We Are</x-top-nav-link>
+    <x-top-nav-link href="/sponsors" :active="request()->segment(1) == 'sponsors' ? true : false">Our Sponsors</x-top-nav-link>
+      <!-- Show these links only if the user is logged in -->
+      @auth
       <x-top-nav-link href="/braiders" :active="request()->segment(1) == 'braiders' ? true : false">Braiders</x-top-nav-link>
       <x-top-nav-link href="/calendar" :active="request()->is('calendar')">Calendar</x-top-nav-link>
       <x-top-nav-link href="/ambassadors" :active="request()->is('ambassadors')">Ambassadors</x-top-nav-link>
       <x-top-nav-link href="/studentpicks" :active="request()->is('studentpicks')">Student Picks</x-top-nav-link>
+      @endauth
       @admin
         <a href="/admin" class="text-sm font-semibold leading-6 text-light">Admin</a>
       @endadmin
@@ -33,6 +37,6 @@
                 Sign out <span aria-hidden="true">&rarr;</span>
             </a>
         @endauth
-    </div>
+    </div> 
   </nav>
 </header>
