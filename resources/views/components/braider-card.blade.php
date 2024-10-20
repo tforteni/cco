@@ -51,9 +51,9 @@
     </div>
     <div>
         <p class="text-tahini text-4xl font-bold"> {{ $braider->user->name }} </p>
-        <p class="text-tahini">Specialty: Box braids and cornrows</p>
+        <!-- <p class="text-tahini">Specialty: Box braids and cornrows</p> -->
         <p class="text-tahini">Price range:${{ $braider->min_price }} ~ ${{ $braider->max_price }}</p>
-        <p class="text-tahini">Usual availability: Weekday evenings</p>
+        <!-- <p class="text-tahini">Usual availability: Weekday evenings</p> -->
     </div>
     </a>
 </div>
