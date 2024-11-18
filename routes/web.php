@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Models\Braider;
@@ -31,7 +32,7 @@ Route::get('/braider-profile', function () {
     return view('braider-profile', ['braider' => $braider]);
 })->middleware(['auth', 'verified']);
 
-Route::get('/calendar', function () {
+Route::get('/club-calendar', function () { //modified from 'calendar' to 'club-calendar'
     return view('calendar');
 })->middleware(['auth', 'verified'])->name('calendar');
 
@@ -54,3 +55,13 @@ Route::get('/ambassadors', function () {
 Route::get('/unauthorized', function () {
     return view('unauthorized');
 })->name('unauthorized');
+
+// Route to show the braider's calendar and availability
+Route::get('/braiders/{braider}/calendar', [AppointmentController::class, 'showBraiderCalendar'])
+    ->middleware(['auth', 'verified']) // Only logged-in users can access
+    ->name('braider.calendar');
+
+// Route to store a new appointment
+Route::post('/appointments', [AppointmentController::class, 'store'])
+    ->middleware(['auth', 'verified']) // Only logged-in users can book
+    ->name('appointments.store');
