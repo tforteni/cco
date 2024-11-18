@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('availabilities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('braider_id')->constrained('braiders')->cascadeOnDelete();
-            $table->enum('day', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
-            $table->string('start_time');
-            $table->string('end_time');
+            $table->foreignId('braider_id')->constrained('braiders')->cascadeOnDelete(); // Link to braiders
+            //$table->enum('day', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])->nullable(); // Weekly availability
+            $table->dateTime('start_time'); // For one-time or recurring availability
+            $table->dateTime('end_time');   // End time
+            $table->string('availability_type')->default('one_time'); // 'one_time' or 'recurring'
+            $table->boolean('booked')->default(false); // Whether the slot is booked
+            $table->string('location')->nullable(); // Optional location
             $table->timestamps();
         });
     }
