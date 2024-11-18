@@ -17,6 +17,13 @@ class User extends Authenticatable
        return $this->hasOne(Braider::class); 
     }
 
+    // a user can have many appointments
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+
     /**
      * The attributes that are mass assignable.
      *
@@ -25,6 +32,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'role',
     ];

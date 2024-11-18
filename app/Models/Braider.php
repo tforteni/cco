@@ -31,4 +31,10 @@ class Braider extends Model
     {
         return $this->hasMany(Availability::class);
     }
+    
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
 }
