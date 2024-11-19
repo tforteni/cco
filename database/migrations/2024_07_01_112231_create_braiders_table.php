@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('work_image1')->nullable();
             $table->string('work_image2')->nullable();
             $table->string('work_image3')->nullable();
-            $table->integer('min_price')->default(0);
-            $table->integer('max_price');
+            $table->integer('min_price')->default(1);
+            $table->integer('max_price')->default(1);;
             $table->boolean('share_email')->default(false);
             $table->boolean('verified')->default('0');
             //I want to have hair speciality be an enum but i'll need to make a pivot table

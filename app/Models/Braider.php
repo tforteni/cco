@@ -12,7 +12,7 @@ class Braider extends Model
     use HasFactory;
 
     // Specify fields that can be mass assigned
-    protected $fillable = ['verified', 'user_id', 'bio', 'headshot', 'work_image1', 'work_image2', 'work_image3', 'share_email',];
+    protected $fillable = ['verified', 'user_id', 'bio', 'headshot', 'work_image1', 'work_image2', 'work_image3', 'share_email', 'max_price', 'min_price'];
 
     /**
      * Define the relationship between a Braider and a User.
