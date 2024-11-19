@@ -56,12 +56,24 @@ Route::get('/unauthorized', function () {
     return view('unauthorized');
 })->name('unauthorized');
 
-// Route to show the braider's calendar and availability
-Route::get('/braiders/{braider}/calendar', [AppointmentController::class, 'showBraiderCalendar'])
-    ->middleware(['auth', 'verified']) // Only logged-in users can access
-    ->name('braider.calendar');
+// Routes for managing braider availability
+Route::get('/braider/availability', [\App\Http\Controllers\AvailabilityController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('braider.availability'); // Route for viewing availability
 
-// Route to store a new appointment
-Route::post('/appointments', [AppointmentController::class, 'store'])
-    ->middleware(['auth', 'verified']) // Only logged-in users can book
-    ->name('appointments.store');
+Route::post('/availabilities', [\App\Http\Controllers\AvailabilityController::class, 'store'])
+    ->middleware(['auth', 'verified'])
+    ->name('braider.availability.store'); // Route for adding availability
+
+Route::delete('/availabilities/{id}', [\App\Http\Controllers\AvailabilityController::class, 'destroy'])
+    ->middleware(['auth', 'verified'])
+    ->name('braider.availability.destroy'); // Route for deleting availability
+
+// Routes for braider's calendar and booking appointments
+Route::get('/braiders/{braider}/calendar', [\App\Http\Controllers\AppointmentController::class, 'showBraiderCalendar'])
+    ->middleware(['auth', 'verified'])
+    ->name('braider.calendar'); // Route for viewing braider calendar
+
+Route::post('/appointments', [\App\Http\Controllers\AppointmentController::class, 'store'])
+    ->middleware(['auth', 'verified'])
+    ->name('appointments.store'); // Route for booking appointments

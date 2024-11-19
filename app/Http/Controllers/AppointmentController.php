@@ -40,7 +40,7 @@ class AppointmentController extends Controller
         });
 
         // Pass to the view
-        return view('calendar', [
+        return view('braider-calendar', [
             'availabilities' => $availabilitiesJson->toJson(),
             'braider' => $braider
         ]);
