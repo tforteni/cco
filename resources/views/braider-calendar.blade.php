@@ -1,7 +1,7 @@
 @extends('layouts.app2')
 
 @section('content')
-    <h2>Book a Slot with {{ $braider->user->name }}</h2> <!-- Braider name -->
+    <h2>Book a Slot with {{ $braider->user->name }}</h2>
 
     <div id="calendar"></div>
 
@@ -35,11 +35,7 @@
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'timeGridWeek',
-                selectable: false,
-                slotMinTime: '06:00:00',
-                slotMaxTime: '24:00:00',
                 events: {!! $availabilities !!},
-
                 eventClick: function(info) {
                     if (info.event.title === "Booked Appointment") {
                         alert("This slot is already booked.");
