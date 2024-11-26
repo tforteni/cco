@@ -58,9 +58,10 @@
                     type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}',
-                        start_time: start,
-                        finish_time: end,
-                        braider_id: braiderId
+                        user_id: {{ Auth::id() }}, // Ensure the correct user_id is sent
+                        braider_id: {{ $braider->id }}, // Ensure the braider_id matches
+                        start_time: $('#startTime').val(),
+                        finish_time: $('#endTime').val(),
                     },
                     success: function(response) {
                         var availableEvent = calendar.getEvents().find(event => event.startStr === start && event.title === 'Available');

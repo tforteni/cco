@@ -27,10 +27,20 @@ Route::get('/braiders/{braider}', function (Braider $braider) {
     return view('braider', ['braider' => $braider]);
 })->middleware(['auth', 'verified'])->name('braider');
 
+// route to show braider profile with reviews, availability calendar, etc.
 Route::get('/braider-profile', function () {
     $braider = Auth::user()->braider;
     return view('braider-profile', ['braider' => $braider]);
 })->middleware(['auth', 'verified']);
+
+
+// route to manage braider availability
+Route::middleware(['auth', 'role:braider'])->group(function () {
+    Route::get('/braider/availability', [AvailabilityController::class, 'index'])->name('braider.availability');
+    Route::post('/braider/availability', [AvailabilityController::class, 'store'])->name('braider.availability.store');
+    Route::delete('/braider/availability/{id}', [AvailabilityController::class, 'destroy'])->name('braider.availability.destroy');
+});
+
 
 Route::get('/club-calendar', function () { //modified from 'calendar' to 'club-calendar'
     return view('calendar');

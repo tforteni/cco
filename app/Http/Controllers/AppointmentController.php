@@ -51,6 +51,8 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
+        // log the request for debugging
+        \Log::info($request->all());
         // Validate the request
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',

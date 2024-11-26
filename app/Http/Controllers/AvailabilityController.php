@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Availability;
@@ -20,8 +21,14 @@ class AvailabilityController extends Controller
             abort(403, 'Only braiders can access availability.');
         }
 
+        // Fetch the braider profile associated with the authenticated user
+        $braider = Braider::where('user_id', $user->id)->first();
+        if (!$braider) {
+            abort(404, 'Braider profile not found.');
+        }
+
         // Fetch braider-specific availabilities
-        $availabilities = Availability::where('braider_id', $user->id)->get();
+        $availabilities = Availability::where('braider_id', $braider->id)->get();
 
         // Convert to FullCalendar format
         $availabilitiesJson = $availabilities->map(function ($availability) {
@@ -48,6 +55,12 @@ class AvailabilityController extends Controller
             abort(403, 'Only braiders can manage availability.');
         }
 
+        // Fetch the braider profile associated with the authenticated user
+        $braider = Braider::where('user_id', $user->id)->first();
+        if (!$braider) {
+            abort(404, 'Braider profile not found.');
+        }
+
         // Validate the request
         $request->validate([
             'start_time' => 'required|date',
@@ -58,7 +71,7 @@ class AvailabilityController extends Controller
 
         // Save the availability
         $availability = Availability::create([
-            'braider_id' => $user->id,
+            'braider_id' => $braider->id, // Use the correct braider_id
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'availability_type' => $request->availability_type,
@@ -76,13 +89,21 @@ class AvailabilityController extends Controller
     // Delete availability
     public function destroy($id)
     {
+        // Ensure user is authenticated
         $user = Auth::user();
         if (!$user || $user->role !== 'braider') {
             abort(403, 'Only braiders can manage availability.');
         }
 
+        // Fetch the braider profile associated with the authenticated user
+        $braider = Braider::where('user_id', $user->id)->first();
+        if (!$braider) {
+            abort(404, 'Braider profile not found.');
+        }
+
+        // Fetch the availability to delete
         $availability = Availability::find($id);
-        if ($availability && $availability->braider_id === $user->id) {
+        if ($availability && $availability->braider_id === $braider->id) {
             $availability->delete();
             return response()->json(['success' => true], 200);
         }
