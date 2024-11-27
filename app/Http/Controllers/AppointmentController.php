@@ -8,6 +8,8 @@ use App\Models\Availability;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppointmentConfirmation;
+use App\Mail\BraiderAppointmentConfirmation;
+
 
 class AppointmentController extends Controller
 {
