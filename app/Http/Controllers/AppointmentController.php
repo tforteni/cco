@@ -79,7 +79,7 @@ class AppointmentController extends Controller
         $braiderEmail = $appointment->braider->user->email; // Assuming `braider` has a `user` relationship
 
         Mail::to($userEmail)->send(new AppointmentConfirmation($appointment));
-        Mail::to($braiderEmail)->send(new AppointmentConfirmation($appointment));
+        Mail::to($braiderEmail)->send(new BraiderAppointmentConfirmation($appointment));
 
         // Return response
         return response()->json([
