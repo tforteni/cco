@@ -21,9 +21,11 @@
             <!-- Logo -->
             <div>
                 <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-tahini" />
+                    <img class="mx-auto" src="{{ asset('images/logo.JPEG') }}" alt="Coily Curly Office" style="height: 4.5rem; max-width: 100px; width: auto;">
                 </a>
             </div>
+
+
 
             <!-- Form Container (Card) -->
             <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-light-navy shadow-md overflow-hidden sm:rounded-lg border-2 border-dark-tahini"> <!-- Updated background color to light navy -->
