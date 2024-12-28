@@ -2,11 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Enums\UserRoleEnum;
 
 class UserSeeder extends Seeder
 {
@@ -15,25 +13,39 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
+        // Admin User
+        User::create([
             'name' => 'Teni',
-            'role' => UserRoleEnum::ADMIN,
+            'role' => 'admin', // Aligned with the 'role' field as a string enum in your current model
             'email' => 't@t.com',
-            'password' =>  Hash::make('teni'),
+            'password' => Hash::make('teni'),
+            'phone' => '1234567890', // Optional: Add a default phone number
         ]);
 
-        User::factory()->create([
+        // Braider Users
+        User::create([
             'name' => 'Amaya',
-            'role' => UserRoleEnum::BRAIDER,
+            'role' => 'braider', // Role for braiders
             'email' => 'a@a.com',
-            'password' =>  Hash::make('amaya'),
+            'password' => Hash::make('amaya'),
+            'phone' => '0987654321', // Optional: Add a phone number
         ]);
 
-        User::factory()->create([
+        User::create([
             'name' => 'Mirelle',
-            'role' => UserRoleEnum::BRAIDER,
+            'role' => 'braider',
             'email' => 'm@m.com',
-            'password' =>  Hash::make('mirelle'),
+            'password' => Hash::make('mirelle'),
+            'phone' => '5678901234', // Optional: Add a phone number
+        ]);
+
+        // Regular User
+        User::create([
+            'name' => 'Samuel',
+            'role' => 'member', // Role for regular users
+            'email' => 's@s.com',
+            'password' => Hash::make('samuel'),
+            'phone' => '1122334455', // Optional: Add a phone number
         ]);
     }
 }
