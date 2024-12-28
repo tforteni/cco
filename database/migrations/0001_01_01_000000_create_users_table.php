@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->enum('role', ['member', 'braider', 'admin'])->default('member');
             $table->string('email')->unique();
+            $table->string('phone')->nullable(); // new column
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

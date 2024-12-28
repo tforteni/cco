@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('appointments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('braiders')->cascadeOnDelete();
-            $table->foreignId('braider_id')->constrained('braiders')->cascadeOnDelete();
-            $table->enum('day', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
-            $table->string('start_time');
-            $table->string('end_time');
-            $table->timestamps();
+            $table->id();  // Primary key
+            $table->datetime('start_time');  // Start time of the appointment
+            $table->datetime('finish_time');  // End time of the appointment
+            $table->longText('comments')->nullable();  // Optional comments
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();  // Foreign key to users (clients)
+            $table->foreignId('braider_id')->constrained('braiders')->cascadeOnDelete();  // Foreign key to braiders
+            $table->timestamps();  // Created_at and updated_at timestamps
         });
     }
 
