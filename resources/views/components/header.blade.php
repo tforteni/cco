@@ -15,12 +15,9 @@
         <!-- Desktop Navigation -->
         <div class="hidden lg:flex lg:gap-x-12">
             <x-top-nav-link href="/about-coco" :active="request()->segment(1) == 'about-coco' ? true : false">Who We Are</x-top-nav-link>
-            <!-- <x-top-nav-link href="/sponsors" :active="request()->segment(1) == 'sponsors' ? true : false">Our Sponsors</x-top-nav-link> -->
             @auth
                 <x-top-nav-link href="/braiders" :active="request()->segment(1) == 'braiders' ? true : false">Braiders</x-top-nav-link>
                 <!-- <x-top-nav-link href="/calendar" :active="request()->is('calendar')">Calendar</x-top-nav-link> -->
-                <x-top-nav-link href="/ambassadors" :active="request()->is('ambassadors')">Ambassadors</x-top-nav-link>
-                <x-top-nav-link href="/studentpicks" :active="request()->is('studentpicks')">Student Picks</x-top-nav-link>
             @endauth
         </div>
 
@@ -54,12 +51,9 @@
     <div id="mobile-menu" class="hidden bg-navy text-tahini lg:hidden">
         <ul class="space-y-4 p-4">
             <li><x-top-nav-link href="/about-coco" :active="request()->segment(1) == 'about-coco' ? true : false">Who We Are</x-top-nav-link></li>
-            <!-- <li><x-top-nav-link href="/sponsors" :active="request()->segment(1) == 'sponsors' ? true : false">Our Sponsors</x-top-nav-link></li> -->
             @auth
                 <li><x-top-nav-link href="/braiders" :active="request()->segment(1) == 'braiders' ? true : false">Braiders</x-top-nav-link></li>
                 <!-- <li><x-top-nav-link href="/calendar" :active="request()->is('calendar')">Calendar</x-top-nav-link></li> -->
-                <li><x-top-nav-link href="/ambassadors" :active="request()->is('ambassadors')">Ambassadors</x-top-nav-link></li>
-                <li><x-top-nav-link href="/studentpicks" :active="request()->is('studentpicks')">Student Picks</x-top-nav-link></li>
                 <li>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

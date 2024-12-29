@@ -14,22 +14,19 @@ use App\Mail\BraiderAppointmentConfirmation;
 class AppointmentController extends Controller
 {
     /**
-     * Display the braider's calendar and availability.
-     */
-    public function showBraiderCalendar($braiderId)
+    * Show the braider's profile page with calendar embedded.
+    */
+    public function showBraiderProfile($braiderId)
     {
-        // Fetch braider's availability
+        // Fetch the braider's details
+        $braider = Braider::findOrFail($braiderId);
+
+        // Fetch the braider's availability
         $availabilities = Availability::where('braider_id', $braiderId)
             ->where('booked', false)
             ->get();
 
-        $braider = Braider::find($braiderId);
-
-        if (!$braider) {
-            abort(404, 'Braider not found');
-        }
-
-        // Convert to FullCalendar format
+        // Convert availability to FullCalendar format
         $availabilitiesJson = $availabilities->map(function ($availability) {
             return [
                 'id' => $availability->id,
@@ -41,12 +38,13 @@ class AppointmentController extends Controller
             ];
         });
 
-        // Pass to the view
-        return view('braider-calendar', [
-            'availabilities' => $availabilitiesJson->toJson(),
-            'braider' => $braider
+        // Pass data to the view
+        return view('braider', [
+            'braider' => $braider,
+            'availabilities' => $availabilitiesJson->toJson(), // Pass JSON to the view
         ]);
     }
+
 
     /**
      * Store a new appointment.

@@ -80,9 +80,10 @@ Route::delete('/availabilities/{id}', [\App\Http\Controllers\AvailabilityControl
     ->name('braider.availability.destroy'); // Route for deleting availability
 
 // Routes for braider's calendar and booking appointments
-Route::get('/braiders/{braider}/calendar', [\App\Http\Controllers\AppointmentController::class, 'showBraiderCalendar'])
+// Route for showing the braider's profile with an embedded calendar
+Route::get('/braiders/{braider}', [\App\Http\Controllers\AppointmentController::class, 'showBraiderProfile'])
     ->middleware(['auth', 'verified'])
-    ->name('braider.calendar'); // Route for viewing braider calendar
+    ->name('braider.profile');
 
 Route::post('/appointments', [\App\Http\Controllers\AppointmentController::class, 'store'])
     ->middleware(['auth', 'verified'])

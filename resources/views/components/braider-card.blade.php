@@ -46,8 +46,6 @@
     <div class="relative h-80 w-80 mb-1 border-tahini">
         <div class="work1 absolute h-80 w-80 mb-1 border-tahini"> <img class="object-cover h-full w-full" src="{{$braider->headshot}}" alt=""></div>
         <div class="work2 absolute h-80 w-80 mb-1 border-tahini"> <img class="object-cover h-full w-full" src="{{$braider->work_image1}}" alt=""></div>
-        <div class="work3 absolute h-80 w-80 mb-1 border-tahini"> <img class="object-cover h-full w-full" src="{{$braider->work_image2}}" alt=""></div>
-        <div class="work4 absolute h-80 w-80 mb-1 border-tahini"> <img class="object-cover h-full w-full" src="{{$braider->work_image3}}" alt=""></div>
     </div>
     <div>
         <p class="text-tahini text-4xl font-bold"> {{ $braider->user->name }} </p>
