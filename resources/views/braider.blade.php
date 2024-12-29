@@ -48,6 +48,7 @@
                 <div class="modal-body">
                     <form id="appointmentForm">
                         <p>Do you want to book this slot?</p>
+                        <input type="hidden" id="eventId" name="event_id">
                         <input type="hidden" id="startTime" name="start_time">
                         <input type="hidden" id="endTime" name="finish_time">
                     </form>
@@ -78,6 +79,7 @@
                     }
 
                     // Populate modal with event details
+                    document.getElementById('eventId').value = info.event.id; // Set the unique ID
                     document.getElementById('startTime').value = info.event.startStr;
                     document.getElementById('endTime').value = info.event.endStr;
                     $('#appointmentModal').modal('show');
@@ -91,6 +93,7 @@
 
             // Handle booking functionality
             document.getElementById('saveAppointmentBtn').addEventListener('click', function () {
+                const eventId = document.getElementById('eventId').value;
                 const startTime = document.getElementById('startTime').value;
                 const endTime = document.getElementById('endTime').value;
 
@@ -104,10 +107,11 @@
                         braider_id: {{ $braider->id }},
                         start_time: startTime,
                         finish_time: endTime,
+                        event_id: eventId, // Send the unique event ID
                     },
                     success: function (response) {
-                        // Remove the "Available" event
-                        const availableEvent = calendar.getEvents().find(event => event.startStr === startTime && event.title === 'Available');
+                        // Remove only the clicked "Available" event
+                        const availableEvent = calendar.getEventById(eventId);
                         if (availableEvent) availableEvent.remove();
 
                         // Add the "Booked Appointment" event
