@@ -1,4 +1,5 @@
 <x-layout>
+    <!-- Header Section -->
     <div class="welcome-text mt-10 flex flex-col justify-center items-center" style="font-family: 'Cormorant Garamond', serif; margin-top: 100px;">
         <p class="text-tahini text-4xl font-bold">{{ $braider->user->name }}!</p>
     </div>
@@ -36,37 +37,106 @@
         </div>
     </div>
 
-    <!-- Inline Script -->
+    <!-- Modal for Booking Appointment -->
+    <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="appointmentModalLabel">Book Appointment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="appointmentForm">
+                        <p>Do you want to book this slot?</p>
+                        <input type="hidden" id="startTime" name="start_time">
+                        <input type="hidden" id="endTime" name="finish_time">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="saveAppointmentBtn" class="btn btn-primary">Book Appointment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FullCalendar and jQuery Integration -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
     <script>
-        console.log('Script loaded!');
-
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Initializing FullCalendar...');
-
             const fullCalendarEl = document.getElementById('fullCalendar');
-
-            // Initialize FullCalendar
-            const fullCalendar = new FullCalendar.Calendar(fullCalendarEl, {
+            const calendar = new FullCalendar.Calendar(fullCalendarEl, {
                 initialView: 'timeGridWeek',
-                events: {!! $availabilities !!}, // Ensure valid JSON
+                events: {!! $availabilities !!}, // Render the events
                 eventClick: function (info) {
-                    console.log('Event clicked:', info.event);
-                    alert('Event: ' + info.event.title);
+                    if (info.event.title === "Booked Appointment") {
+                        alert("This slot is already booked.");
+                        return;
+                    }
+
+                    // Populate modal with event details
+                    document.getElementById('startTime').value = info.event.startStr;
+                    document.getElementById('endTime').value = info.event.endStr;
+                    $('#appointmentModal').modal('show');
                 },
-                height: 'auto', // Automatically adjusts the calendar height
-                contentHeight: 'auto', // Dynamically adjusts content height
-                scrollTime: '08:00:00', // Scroll to 8 AM on load
-                slotMinTime: '08:00:00', // Start displaying time slots at 8 AM
-                slotMaxTime: '24:00:00', // End displaying time slots at 12 AM
+                height: 'auto',
+                contentHeight: 'auto',
+                scrollTime: '08:00:00',
+                slotMinTime: '08:00:00',
+                slotMaxTime: '24:00:00',
             });
 
-            // Render the calendar
-            fullCalendar.render();
-            console.log('FullCalendar rendered successfully.');
+            // Handle booking functionality
+            document.getElementById('saveAppointmentBtn').addEventListener('click', function () {
+                const startTime = document.getElementById('startTime').value;
+                const endTime = document.getElementById('endTime').value;
+
+                // AJAX request to book appointment
+                $.ajax({
+                    url: '/appointments',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        user_id: {{ Auth::id() }},
+                        braider_id: {{ $braider->id }},
+                        start_time: startTime,
+                        finish_time: endTime,
+                    },
+                    success: function (response) {
+                        // Remove the "Available" event
+                        const availableEvent = calendar.getEvents().find(event => event.startStr === startTime && event.title === 'Available');
+                        if (availableEvent) availableEvent.remove();
+
+                        // Add the "Booked Appointment" event
+                        calendar.addEvent({
+                            id: response.event_id,
+                            title: 'Booked Appointment',
+                            start: response.start_time,
+                            end: response.finish_time,
+                            backgroundColor: '#dc3545',
+                            borderColor: '#dc3545'
+                        });
+
+                        $('#appointmentModal').modal('hide');
+                        alert("Appointment booked successfully!");
+                    },
+                    error: function () {
+                        alert("Failed to book appointment!");
+                    }
+                });
+            });
+
+            calendar.render();
         });
     </script>
 
     <!-- Custom CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+
     <style>
         body, #fullCalendar .fc-header-toolbar, #fullCalendar .fc-daygrid-day, #fullCalendar .fc-timegrid-axis, #fullCalendar .fc-event {
             font-family: 'Cormorant Garamond', serif !important;
@@ -77,13 +147,13 @@
         }
 
         #calendarContainer {
-            max-height: 400px; /* Ensures the calendar container has a fixed height */
-            overflow-y: auto; /* Enables vertical scrolling for the calendar */
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         #fullCalendar .fc-col-header-cell {
             background-color: rgb(214, 190, 146);
-            color: rgb(11, 26, 55); /* Navy text for headers */
+            color: rgb(11, 26, 55);
         }
 
         #fullCalendar .fc-daygrid-day,
