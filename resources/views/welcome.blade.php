@@ -176,13 +176,14 @@
 
 
         <!-- Section 3: Become an Ambassador -->
-        <div id="section-3" class="section section-3">
+         <!-- remove this section for now -->
+        <!-- <div id="section-3" class="section section-3">
             <div class="content">
                 <h1>Become a Student Ambassador</h1>
                 <p>Join us and represent the Coily Curly Office in your community.</p>
                 <a href="/ambassadors">Learn More</a>
             </div>
-        </div>
+        </div> -->
 
         <!-- Section 4: Events -->
         <div id="section-4" class="section section-4">

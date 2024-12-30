@@ -27,7 +27,7 @@ class AvailabilityController extends Controller
             abort(404, 'Braider profile not found.');
         }
 
-        // Fetch braider-specific availabilities
+        // Fetch braider-specific availabilities (may be empty)
         $availabilities = Availability::where('braider_id', $braider->id)->get();
 
         // Convert to FullCalendar format
@@ -43,8 +43,10 @@ class AvailabilityController extends Controller
             ];
         });
 
+        // Pass availabilities to the view (may be an empty array)
         return view('braider-availability', ['availabilities' => $availabilitiesJson]);
     }
+
 
     // Store availability
     public function store(Request $request)

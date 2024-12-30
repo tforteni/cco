@@ -34,7 +34,11 @@
         .section-header h1 {
             font-size: 4rem;
             margin-bottom: 1rem;
+            font-weight: 700;
             text-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+        .section-header h3 {
+            font-size: 2rem;
         }
 
         .section-header p {
@@ -45,9 +49,7 @@
         }
 
         .section-board {
-            /* background-color:dark-tahini; */
-            /* background-color: #121a26; */
-            background-color:rgb(14, 14, 15);
+            background-color:rgb(5, 15, 29);
         }
 
         /* Board Members Styling */
@@ -98,8 +100,12 @@
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .section-header h1 {
-                font-size: 3rem;
+                font-size: 2.5rem;
             }
+
+            /* .section-header h3 {
+                font-size: 2.5rem;
+            } */
 
             .section-header p {
                 font-size: 1.2rem;
@@ -122,8 +128,9 @@
 
     <!-- Header Section -->
     <div class="section section-header">
-        <h1>The Coily Curly Office</h1>
-        <p>The Coily Curly Office seeks to promote a healthy love of kinky/coily and curly hair in an environment where people learn to care for their God-given hair. We not only aim to provide tools needed to care for coily and curly hair—primarily through workshops—but to create a network between students and local salons for cheaper hair care services. It is our desire that people leave a little bit more confident about the beauty of coils and curls and are equipped to teach others around them.</p>
+        <h3>THE </h3>
+         <h1>Coily Curly Office</h1>
+        <p> seeks to promote a healthy love of kinky/coily and curly hair in an environment where people learn to care for their God-given hair. We not only aim to provide tools needed to care for coily and curly hair—primarily through workshops—but to create a network between students and local salons for cheaper hair care services. It is our desire that people leave a little bit more confident about the beauty of coils and curls and are equipped to teach others around them.</p>
     </div>
 
     <!-- Board Members Section -->

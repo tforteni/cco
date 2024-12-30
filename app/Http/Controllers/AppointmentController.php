@@ -14,22 +14,19 @@ use App\Mail\BraiderAppointmentConfirmation;
 class AppointmentController extends Controller
 {
     /**
-     * Display the braider's calendar and availability.
+     * Show the braider's profile page with calendar embedded.
      */
-    public function showBraiderCalendar($braiderId)
+    public function showBraiderProfile($braiderId)
     {
-        // Fetch braider's availability
+        // Fetch the braider's details
+        $braider = Braider::findOrFail($braiderId);
+
+        // Fetch the braider's availability
         $availabilities = Availability::where('braider_id', $braiderId)
             ->where('booked', false)
             ->get();
 
-        $braider = Braider::find($braiderId);
-
-        if (!$braider) {
-            abort(404, 'Braider not found');
-        }
-
-        // Convert to FullCalendar format
+        // Convert availability to FullCalendar format
         $availabilitiesJson = $availabilities->map(function ($availability) {
             return [
                 'id' => $availability->id,
@@ -41,20 +38,22 @@ class AppointmentController extends Controller
             ];
         });
 
-        // Pass to the view
-        return view('braider-calendar', [
-            'availabilities' => $availabilitiesJson->toJson(),
-            'braider' => $braider
+        // Pass data to the view
+        return view('braider', [
+            'braider' => $braider,
+            'availabilities' => $availabilitiesJson->toJson(), // Pass JSON to the view
         ]);
     }
+
 
     /**
      * Store a new appointment.
      */
     public function store(Request $request)
     {
-        // log the request for debugging
+        // Log the request for debugging
         \Log::info($request->all());
+
         // Validate the request
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
@@ -62,6 +61,16 @@ class AppointmentController extends Controller
             'start_time' => 'required|date',
             'finish_time' => 'nullable|date|after:start_time',
         ]);
+
+        // Check if the requested time slot is available
+        $availability = Availability::where('braider_id', $validated['braider_id'])
+            ->where('start_time', $validated['start_time'])
+            ->where('booked', false)
+            ->first();
+
+        if (!$availability) {
+            return response()->json(['message' => 'The selected time slot is no longer available.'], 400);
+        }
 
         // Create the appointment
         $appointment = Appointment::create([
@@ -71,10 +80,8 @@ class AppointmentController extends Controller
             'finish_time' => $validated['finish_time'],
         ]);
 
-        // Mark availability as booked
-        Availability::where('braider_id', $validated['braider_id'])
-            ->where('start_time', $validated['start_time'])
-            ->update(['booked' => true]);
+        // Mark the specific availability slot as booked
+        $availability->update(['booked' => true]);
 
         // Send email notifications
         $userEmail = $appointment->user->email; // Assuming `user` relationship exists
