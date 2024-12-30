@@ -17,6 +17,8 @@ Route::middleware('auth')->group(function () {
 
     // Add the route for switching roles
     Route::patch('/profile/switch-role', [ProfileController::class, 'switchRole'])->name('profile.switchRole');
+    Route::patch('/profile/update-braider-field', [ProfileController::class, 'updateBraiderField'])->name('profile.updateBraiderField');
+
 });
 
 require __DIR__.'/auth.php';
@@ -49,6 +51,9 @@ Route::middleware(['auth', 'braider'])->group(function () {
     Route::get('/braider/complete-profile', [BraiderController::class, 'create'])->name('braider.complete-profile');
     Route::post('/braider/complete-profile', [BraiderController::class, 'store'])->name('braider.store-profile');
 });
+
+
+Route::patch('/braider/update/{field}', [BraiderController::class, 'update'])->name('braider.update');
 
 
 // Calendar and appointments

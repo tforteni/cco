@@ -28,6 +28,41 @@ class BraiderController extends Controller
         return view('braider.complete-profile');
     }
 
+    public function update(Request $request, $field)
+    {
+        // Validate the field being updated
+        $validationRules = [
+            'bio' => 'required|string|max:500',
+            'headshot' => 'required|image|max:2048',
+            'min_price' => 'required|numeric|min:0',
+            'max_price' => 'required|numeric|gte:min_price',
+        ];
+
+        if (!array_key_exists($field, $validationRules)) {
+            return redirect()->back()->withErrors(['error' => 'Invalid field.']);
+        }
+
+        $request->validate([
+            $field => $validationRules[$field],
+        ]);
+
+        // Retrieve the authenticated user's braider profile
+        $braider = Braider::where('user_id', auth()->id())->firstOrFail();
+
+        if ($field === 'headshot' && $request->hasFile('headshot')) {
+            // Handle file upload for the headshot
+            $path = $request->file('headshot')->store('headshots', 'public');
+            $braider->headshot = $path;
+        } else {
+            // Update the specified field
+            $braider->{$field} = $request->input($field);
+        }
+
+        $braider->save();
+
+        return redirect()->route('profile.edit')->with('status', ucfirst($field) . ' updated successfully!');
+    }
+
     /**
      * Store the completed braider profile.
      */
