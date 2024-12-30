@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\BraiderController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Models\Braider;
@@ -14,10 +14,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Add the route for switching roles
+    Route::patch('/profile/switch-role', [ProfileController::class, 'switchRole'])->name('profile.switchRole');
 });
 
 require __DIR__.'/auth.php';
 
+// Existing routes
 Route::get('/braiders', function () {
     $braiders = Braider::all();
     return view('braiders', ['braiders' => $braiders]);
@@ -27,25 +31,32 @@ Route::get('/braiders/{braider}', function (Braider $braider) {
     return view('braider', ['braider' => $braider]);
 })->middleware(['auth', 'verified'])->name('braider');
 
-// route to show braider profile with reviews, availability calendar, etc.
+// Braider profile
 Route::get('/braider-profile', function () {
     $braider = Auth::user()->braider;
     return view('braider-profile', ['braider' => $braider]);
 })->middleware(['auth', 'verified']);
 
-
-// route to manage braider availability
-Route::middleware(['auth', 'role:braider'])->group(function () {
+// Manage braider availability
+Route::middleware(['auth', 'verified', 'role:braider'])->group(function () {
     Route::get('/braider/availability', [AvailabilityController::class, 'index'])->name('braider.availability');
-    Route::post('/braider/availability', [AvailabilityController::class, 'store'])->name('braider.availability.store');
-    Route::delete('/braider/availability/{id}', [AvailabilityController::class, 'destroy'])->name('braider.availability.destroy');
+    Route::post('/availabilities', [AvailabilityController::class, 'store'])->name('availabilities.store');
+    Route::delete('/availabilities/{id}', [AvailabilityController::class, 'destroy'])->name('availabilities.destroy');
+});
+
+// Group routes for braider role
+Route::middleware(['auth', 'braider'])->group(function () {
+    Route::get('/braider/complete-profile', [BraiderController::class, 'create'])->name('braider.complete-profile');
+    Route::post('/braider/complete-profile', [BraiderController::class, 'store'])->name('braider.store-profile');
 });
 
 
-Route::get('/club-calendar', function () { //modified from 'calendar' to 'club-calendar'
+// Calendar and appointments
+Route::get('/club-calendar', function () {
     return view('calendar');
 })->middleware(['auth', 'verified'])->name('calendar');
 
+// Other routes
 Route::get('/studentpicks', function () {
     return view('studentpicks');
 })->name('studentpicks');
@@ -66,25 +77,30 @@ Route::get('/unauthorized', function () {
     return view('unauthorized');
 })->name('unauthorized');
 
-// Routes for managing braider availability
+// Braider availability
 Route::get('/braider/availability', [\App\Http\Controllers\AvailabilityController::class, 'index'])
     ->middleware(['auth', 'verified'])
-    ->name('braider.availability'); // Route for viewing availability
+    ->name('braider.availability');
 
 Route::post('/availabilities', [\App\Http\Controllers\AvailabilityController::class, 'store'])
     ->middleware(['auth', 'verified'])
-    ->name('braider.availability.store'); // Route for adding availability
+    ->name('braider.availability.store');
 
 Route::delete('/availabilities/{id}', [\App\Http\Controllers\AvailabilityController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
-    ->name('braider.availability.destroy'); // Route for deleting availability
+    ->name('braider.availability.destroy');
 
-// Routes for braider's calendar and booking appointments
-// Route for showing the braider's profile with an embedded calendar
+
+    
+// Braider profile with calendar
 Route::get('/braiders/{braider}', [\App\Http\Controllers\AppointmentController::class, 'showBraiderProfile'])
     ->middleware(['auth', 'verified'])
     ->name('braider.profile');
 
 Route::post('/appointments', [\App\Http\Controllers\AppointmentController::class, 'store'])
     ->middleware(['auth', 'verified'])
-    ->name('appointments.store'); // Route for booking appointments
+    ->name('appointments.store');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');

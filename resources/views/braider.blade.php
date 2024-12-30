@@ -20,7 +20,7 @@
         <!-- Right Column: Reviews Section -->
         <div class="p-4 space-y-4 text-tahini bg-light-navy rounded-md border-dark-tahini border-2" style="background-color: #121a26;">
             <div class="flex flex-col items-center">
-                <p class="text-xl font-semibold">Reviews</p>
+                <p class="text-xl font-semibold">Reviews</p> 
             </div>
             <div>
                 <p class="font-bold">Kike says:</p>
@@ -144,6 +144,8 @@
     <style>
         body, #fullCalendar .fc-header-toolbar, #fullCalendar .fc-daygrid-day, #fullCalendar .fc-timegrid-axis, #fullCalendar .fc-event {
             font-family: 'Cormorant Garamond', serif !important;
+            background-color:rgb(5, 15, 29);
+            /* color: #f7ebcb; Set default text color for contrast */
         }
 
         #fullCalendar .fc-header-toolbar {
@@ -157,7 +159,7 @@
 
         #fullCalendar .fc-col-header-cell {
             background-color: rgb(214, 190, 146);
-            color: rgb(11, 26, 55);
+            color: rgb(2, 8, 21);
         }
 
         #fullCalendar .fc-daygrid-day,

@@ -48,18 +48,18 @@
             }
 
             .section-header h1 {
-                font-size: 2.5rem; /* Reduce heading size for smaller screens */
+                font-size: 2.5rem;
             }
 
             .section-header p {
-                font-size: 1rem; /* Reduce paragraph size */
+                font-size: 1rem; 
                 line-height: 1.6;
                 margin-bottom: 1rem;
             }
 
             .content a {
-                font-size: 1rem; /* Adjust button text size */
-                padding: 8px 15px; /* Reduce button padding */
+                font-size: 1rem; 
+                padding: 8px 15px; 
             }
         }
     </style>
@@ -74,8 +74,9 @@
             </a>
         </div>
     </div>
-    
-    <div class="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4" style="font-family: 'Cormorant Garamond', serif;">
+
+    <!-- Braiders Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4" style="font-family: 'Cormorant Garamond', serif; background-color: rgb(5, 15, 29); margin-top: 0;">
         @foreach($braiders as $braider)
             <x-braider-card :braider="$braider" />
         @endforeach
@@ -86,6 +87,7 @@
 <style>
     body {
         font-family: 'Cormorant Garamond', serif !important;
+        margin: 0; /* Ensure no body margin affects layout */
     }
 
     .grid {

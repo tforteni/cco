@@ -49,7 +49,7 @@
         }
 
         .section-board {
-            background-color:rgb(14, 14, 15);
+            background-color:rgb(5, 15, 29);
         }
 
         /* Board Members Styling */
