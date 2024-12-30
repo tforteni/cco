@@ -13,11 +13,17 @@ class CreateBraider extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        // Ensure the 'bio' field has a default value if not provided
+        $data['bio'] = $data['bio'] ?? ''; // Use an empty string as the default value for 'bio'
+
         $braider = static::getModel()::create($data);
+
+        // Update the related user role to 'braider'
         $braider->user->update([
-            'role' => 'braider'
+            'role' => 'braider',
         ]);
 
         return $braider;
     }
 }
+

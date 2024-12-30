@@ -44,6 +44,7 @@ class AvailabilityController extends Controller
         });
 
         return view('braider-availability', ['availabilities' => $availabilitiesJson]);
+        // return view('braider.availability', ['availabilities' => $availabilitiesJson]);
     }
 
     // Store availability
