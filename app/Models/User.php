@@ -11,8 +11,7 @@ use App\Models\Braider;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
-
-
+    
     // a user can only have one role : braider or member or admin
     public function braider()
     {

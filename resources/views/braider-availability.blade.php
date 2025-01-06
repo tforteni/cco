@@ -60,6 +60,8 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
@@ -110,6 +112,23 @@
             $('#availabilityForm').on('submit', function (e) {
                 e.preventDefault();
 
+                // Overlap validation
+                let start = $('#start_time').val();
+                let end = $('#end_time').val();
+
+                let isOverlapping = calendar.getEvents().some(event => {
+                    return event.title === 'Available' && (
+                        (start >= event.start && start < event.end) ||
+                        (end > event.start && end <= event.end) ||
+                        (start <= event.start && end >= event.end)
+                    );
+                });
+
+                if (isOverlapping) {
+                    alert("This slot overlaps with an existing availability.");
+                    return;
+                }
+
                 $.ajax({
                     url: '/availabilities',
                     type: 'POST',
@@ -125,6 +144,7 @@
                         });
                         var modal = bootstrap.Modal.getInstance(document.getElementById('availabilityModal'));
                         modal.hide();
+                        toastr.success('{{ __('Availability saved successfully.') }}');
                     },
                     error: function () {
                         alert('{{ __('Failed to save availability.') }}');
