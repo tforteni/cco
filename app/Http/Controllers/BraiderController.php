@@ -19,12 +19,7 @@ class BraiderController extends Controller
             abort(403, 'Only braiders can complete their profile.');
         }
 
-        // Check if the user already has a braider profile
-        $braider = Braider::where('user_id', $user->id)->first();
-        if ($braider) {
-            return redirect()->route('profile.edit')->with('message', 'Profile already completed.');
-        }
-
+        // Allow the user to access the complete-profile page
         return view('braider.complete-profile');
     }
 
@@ -68,13 +63,12 @@ class BraiderController extends Controller
      */
     public function store(Request $request)
     {
-        // Ensure user is authenticated and has the 'braider' role
         $user = Auth::user();
+
         if (!$user || $user->role !== 'braider') {
             abort(403, 'Only braiders can complete their profile.');
         }
 
-        // Validate the request
         $request->validate([
             'bio' => 'required|string|max:1000',
             'headshot' => 'required|image|max:2048',
@@ -83,20 +77,47 @@ class BraiderController extends Controller
             'work_image3' => 'required|image|max:2048',
             'min_price' => 'required|numeric|min:1',
             'max_price' => 'required|numeric|gt:min_price',
+        ], [
+            'bio.required' => 'Please provide a bio.',
+            'headshot.required' => 'A headshot is required.',
+            'headshot.image' => 'The headshot must be an image file.',
+            'headshot.max' => 'The headshot must not exceed 2MB.',
+            'work_image1.required' => 'Work Photo 1 is required.',
+            'work_image1.image' => 'Work Photo 1 must be an image file.',
+            'work_image1.max' => 'Work Photo 1 must not exceed 2MB.',
+            'min_price.required' => 'Please specify a minimum price.',
+            'max_price.gt' => 'The maximum price must be greater than the minimum price.',
         ]);
 
-        // Store the braider profile
-        $braider = Braider::create([
-            'user_id' => $user->id,
-            'bio' => $request->bio,
-            'headshot' => $request->file('headshot')->store('headshots', 'public'),
-            'work_image1' => $request->file('work_image1')->store('work_images', 'public'),
-            'work_image2' => $request->file('work_image2')->store('work_images', 'public'),
-            'work_image3' => $request->file('work_image3')->store('work_images', 'public'),
-            'min_price' => $request->min_price,
-            'max_price' => $request->max_price,
-        ]);
+        try {
+            // Check if the user already has a braider profile
+            $braider = Braider::where('user_id', $user->id)->first();
 
-        return redirect()->route('profile.edit')->with('message', 'Braider profile completed successfully.');
+            if (!$braider) {
+                $braider = Braider::create([
+                    'user_id' => $user->id,
+                    'bio' => $request->bio,
+                    'headshot' => $request->file('headshot')->store('headshots', 'public'),
+                    'work_image1' => $request->file('work_image1')->store('work_images', 'public'),
+                    'work_image2' => $request->file('work_image2')->store('work_images', 'public'),
+                    'work_image3' => $request->file('work_image3')->store('work_images', 'public'),
+                    'min_price' => $request->min_price,
+                    'max_price' => $request->max_price,
+                    'specialties' => 'required|array', // Ensure specialties is an array
+                    'specialties.*' => 'exists:specialties,id', // Each specialty must exist in the database
+                ]);
+            }
+            // attach selected specialties to the braider
+            $braider->specialties()->sync($request->specialties);
+
+            return redirect()->route('profile.edit')->with('message', 'Braider profile completed successfully.');
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Error creating braider profile: ' . $e->getMessage());
+
+            return redirect()->back()->withErrors(['error' => 'An unexpected error occurred. Please try again.']);
+        }
     }
+
 }
+

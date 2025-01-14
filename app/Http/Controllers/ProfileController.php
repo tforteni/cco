@@ -50,6 +50,12 @@ class ProfileController extends Controller
         ];
 
         $newRole = $request->input('role');
+        $user = $request->user();
+
+        // Prevent switching back to "member" if the current role is "braider"
+        if ($user->role === 'braider' && $newRole === 'member') {
+            return redirect()->route('profile.edit')->withErrors(['role' => 'Once you become a Braider, you cannot switch back to Member.']);
+        }
 
         // Additional validation rules for braider-specific fields
         if ($newRole === 'braider') {
@@ -62,8 +68,6 @@ class ProfileController extends Controller
         }
 
         $request->validate($rules);
-
-        $user = $request->user();
 
         // Allow switching to 'admin' only if the current user is already an admin
         if ($newRole === 'admin' && $user->role !== 'admin') {
@@ -96,6 +100,7 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.edit')->with('status', 'role-switched');
     }
+
 
     /**
      * Update specific fields of the braider profile.

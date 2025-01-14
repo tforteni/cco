@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('availabilities', function (Blueprint $table) {
-            $table->date('date')->nullable(); // For one-off availability
-            $table->string('phone_number')->nullable();
-            $table->boolean('booked')->default(false);
+            if (!Schema::hasColumn('availabilities', 'date')) {
+                $table->date('date')->nullable();
+            }
+            if (!Schema::hasColumn('availabilities', 'phone_number')) {
+                $table->string('phone_number')->nullable();
+            }
+            if (!Schema::hasColumn('availabilities', 'booked')) {
+                $table->boolean('booked')->default(false);
+            }
         });
     }
 
@@ -24,7 +30,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('availabilities', function (Blueprint $table) {
-            $table->dropColumn(['date', 'phone_number', 'booked']);
+            if (Schema::hasColumn('availabilities', 'date')) {
+                $table->dropColumn('date');
+            }
+            if (Schema::hasColumn('availabilities', 'phone_number')) {
+                $table->dropColumn('phone_number');
+            }
+            if (Schema::hasColumn('availabilities', 'booked')) {
+                $table->dropColumn('booked');
+            }
         });
     }
 };

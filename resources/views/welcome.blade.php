@@ -136,7 +136,7 @@
                 <h3>WELCOME TO THE</h3>
                 <h1>Coily Curly Office</h1>
                 <p>Discover hairstyles, braiders, and a community of like-minded people!</p>
-                <a href="/#">Explore More</a>
+                <a href="https://www.loreal.com/en/usa/" target="_blank">Sponsored by L'Oréal</a>
             </div>
         </div>
 

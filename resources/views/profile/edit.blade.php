@@ -104,10 +104,11 @@
                                 </label>
                                 <select id="role" name="role" 
                                         class="block w-full mt-1 rounded-md border-gray-300 shadow-sm 
-                                               focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm 
-                                               dark:bg-gray-700 dark:text-gray-300"
+                                            focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm 
+                                            dark:bg-gray-700 dark:text-gray-300"
                                         style="font-family: 'Cormorant Garamond', serif;">
-                                    <option value="member" {{ auth()->user()->role === 'member' ? 'selected' : '' }}>
+                                    <option value="member" 
+                                            {{ auth()->user()->role === 'braider' ? 'disabled' : (auth()->user()->role === 'member' ? 'selected' : '') }}>
                                         {{ __('Member') }}
                                     </option>
                                     <option value="braider" {{ auth()->user()->role === 'braider' ? 'selected' : '' }}>
@@ -174,8 +175,39 @@
         </div>
     </div>
 
+    @if (session('message'))
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
+            <p class="text-green-700 dark:text-green-300 font-semibold text-lg">
+                {{ session('message') }}
+            </p>
+            <button onclick="closeModal()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">OK</button>
+        </div>
+    </div>
+    @endif
+
+
     <!-- Script to Handle Tabs and Braider Fields -->
     <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOM fully loaded"); // Debugging
+
+        // Check if modal exists and show it
+        const modal = document.getElementById('successModal');
+        if (modal) {
+            console.log("Success Modal found, displaying...");
+            modal.style.display = 'flex';
+
+            // Auto-close modal after 3 seconds
+            setTimeout(() => {
+                closeModal();
+            }, 3000);
+        } else {
+            console.log("No modal found, session message might be missing.");
+        }
+
+        // Tab functionality
         function showTab(tab) {
             document.getElementById('view-tab-content').classList.add('hidden');
             document.getElementById('edit-tab-content').classList.add('hidden');
@@ -188,13 +220,27 @@
             document.getElementById('edit-tab').classList.toggle('bg-gray-300', tab !== 'edit');
         }
 
-        document.getElementById('role').addEventListener('change', function () {
-            const braiderFields = document.getElementById('braider-fields');
-            if (this.value === 'braider') {
-                braiderFields.classList.remove('hidden');
-            } else {
-                braiderFields.classList.add('hidden');
-            }
-        });
+        // Role change functionality
+        const roleDropdown = document.getElementById('role');
+        if (roleDropdown) {
+            roleDropdown.addEventListener('change', function () {
+                const braiderFields = document.getElementById('braider-fields');
+                if (this.value === 'braider') {
+                    braiderFields.classList.remove('hidden');
+                } else {
+                    braiderFields.classList.add('hidden');
+                }
+            });
+        }
+    });
+
+    // Function to close modal
+    function closeModal() {
+        const modal = document.getElementById('successModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
     </script>
+
 </x-layout>
