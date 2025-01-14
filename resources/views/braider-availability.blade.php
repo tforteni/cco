@@ -70,6 +70,9 @@
                 selectable: true,
                 slotMinTime: '08:00:00',
                 slotMaxTime: '24:00:00',
+                validRange: {
+                start: new Date().toISOString().split('T')[0] // Today's date
+                },
                 events: @json($availabilities).length > 0 
                     ? @json($availabilities).map(event => ({
                         id: event.id,
