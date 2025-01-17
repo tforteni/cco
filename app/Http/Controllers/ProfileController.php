@@ -64,6 +64,8 @@ class ProfileController extends Controller
                 'headshot' => 'required|image|max:2048', // Headshot file validation
                 'min_price' => 'required|numeric|min:0',
                 'max_price' => 'required|numeric|gte:min_price',
+                'specialties' => 'required|array',
+                'specialties.*' => 'exists:specialties,id',
             ]);
         }
 
@@ -96,9 +98,13 @@ class ProfileController extends Controller
 
             $braider->verified = $braider->verified ?? false; // Default verified to false if not already set
             $braider->save();
+            $braider->specialties()->sync($request->input('specialties', [])); // Sync the braider's specialties
+            
         }
 
-        return redirect()->route('profile.edit')->with('status', 'role-switched');
+        return redirect()->route('profile.edit')->with('message', 'Braider profile updated successfully.');
+      
+
     }
 
 

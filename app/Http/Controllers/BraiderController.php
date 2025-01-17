@@ -69,6 +69,7 @@ class BraiderController extends Controller
             abort(403, 'Only braiders can complete their profile.');
         }
 
+        // Validate the incoming request
         $request->validate([
             'bio' => 'required|string|max:1000',
             'headshot' => 'required|image|max:2048',
@@ -77,6 +78,8 @@ class BraiderController extends Controller
             'work_image3' => 'required|image|max:2048',
             'min_price' => 'required|numeric|min:1',
             'max_price' => 'required|numeric|gt:min_price',
+            'specialties' => 'required|array', // Ensure specialties are an array
+            'specialties.*' => 'exists:specialties,id', // Ensure each specialty ID exists
         ], [
             'bio.required' => 'Please provide a bio.',
             'headshot.required' => 'A headshot is required.',
@@ -90,12 +93,10 @@ class BraiderController extends Controller
         ]);
 
         try {
-            // Check if the user already has a braider profile
-            $braider = Braider::where('user_id', $user->id)->first();
-
-            if (!$braider) {
-                $braider = Braider::create([
-                    'user_id' => $user->id,
+            // Create or update the braider profile
+            $braider = Braider::updateOrCreate(
+                ['user_id' => $user->id],
+                [
                     'bio' => $request->bio,
                     'headshot' => $request->file('headshot')->store('headshots', 'public'),
                     'work_image1' => $request->file('work_image1')->store('work_images', 'public'),
@@ -103,12 +104,12 @@ class BraiderController extends Controller
                     'work_image3' => $request->file('work_image3')->store('work_images', 'public'),
                     'min_price' => $request->min_price,
                     'max_price' => $request->max_price,
-                    'specialties' => 'required|array', // Ensure specialties is an array
-                    'specialties.*' => 'exists:specialties,id', // Each specialty must exist in the database
-                ]);
-            }
-            // attach selected specialties to the braider
+                ]
+            );
+
+            // Attach selected specialties to the braider
             $braider->specialties()->sync($request->specialties);
+
 
             return redirect()->route('profile.edit')->with('message', 'Braider profile completed successfully.');
         } catch (\Exception $e) {
@@ -118,6 +119,7 @@ class BraiderController extends Controller
             return redirect()->back()->withErrors(['error' => 'An unexpected error occurred. Please try again.']);
         }
     }
+
 
 }
 
