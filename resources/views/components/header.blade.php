@@ -50,6 +50,9 @@
                         @if (Auth::user()->role === 'braider')
                             <a href="{{ route('braider.availability') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">Manage Availability</a>
                         @endif
+                        @if (Auth::user()->role === 'admin')
+                            <a href="/admin" class="block px-4 py-2 text-sm hover:bg-dark-tahini">Admin</a>
+                        @endif
                         <form method="POST" action="{{ route('logout') }}" class="block">
                             @csrf
                             <button type="submit" class="w-full text-left px-4 py-2 text-sm hover:bg-dark-tahini">
@@ -115,3 +118,4 @@
         });
     </script>
 </header>
+

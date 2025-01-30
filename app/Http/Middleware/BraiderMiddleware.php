@@ -10,16 +10,21 @@ class BraiderMiddleware
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && ($request->user()->role === 'braider' || $request->user()->role === 'admin')) {
+        // Allow access to the complete-profile route for authenticated users
+        if ($request->routeIs('braider.complete-profile')) {
             return $next($request);
         }
 
-        // If not admin, redirect or handle unauthorized access
+        // For other routes, ensure the user is a braider or admin
+        $user = $request->user();
+        if ($user && ($user->role === 'braider' || $user->role === 'admin')) {
+            return $next($request);
+        }
+
+        // Redirect unauthorized users
         return redirect()->route('unauthorized');
     }
 }

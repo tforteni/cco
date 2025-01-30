@@ -44,8 +44,19 @@
 <div class="p-10 h-100 w-100 flex flex-col">
     <a href="/braiders/{{$braider->id}}">
     <div class="relative h-80 w-80 mb-1 border-tahini">
-        <div class="work1 absolute h-80 w-80 mb-1 border-tahini"><img class="object-cover h-full w-full" src="{{ asset('storage/' . $braider->headshot) }}" alt=""></div>
-        <div class="work2 absolute h-80 w-80 mb-1 border-tahini"> <img class="object-cover h-full w-full" src="{{$braider->work_image1}}" alt=""></div>
+    <!-- <div class="work2 absolute h-80 w-80 mb-1 border-tahini"> <img class="object-cover h-full w-full" src="{{$braider->work_image1}}" alt=""></div> -->
+    @if (!empty($braider->work_image1))
+    <div class="work2 absolute h-80 w-80 mb-1 border-tahini">
+        <img class="object-cover h-full w-full" src="{{ asset('storage/' . $braider->work_image1) }}" alt="">
+    </div>
+    @endif
+
+    @if (!empty($braider->headshot))
+        <div class="work1 absolute h-80 w-80 mb-1 border-tahini">
+            <img class="object-cover h-full w-full" src="{{ asset('storage/' . $braider->headshot) }}" alt="">
+        </div>
+    @endif
+
     </div>
     <div>
         <p class="text-tahini text-4xl font-bold"> {{ $braider->user->name }} </p>

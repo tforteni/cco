@@ -15,7 +15,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Add the route for switching roles
+    // route for switching roles
     Route::patch('/profile/switch-role', [ProfileController::class, 'switchRole'])->name('profile.switchRole');
     Route::patch('/profile/update-braider-field', [ProfileController::class, 'updateBraiderField'])->name('profile.updateBraiderField');
 
@@ -23,7 +23,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-// Existing routes
 Route::get('/braiders', function () {
     $braiders = Braider::all();
     return view('braiders', ['braiders' => $braiders]);
@@ -47,7 +46,7 @@ Route::middleware(['auth', 'verified', 'role:braider'])->group(function () {
 });
 
 // Group routes for braider role
-Route::middleware(['auth', 'braider'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/braider/complete-profile', [BraiderController::class, 'create'])->name('braider.complete-profile');
     Route::post('/braider/complete-profile', [BraiderController::class, 'store'])->name('braider.store-profile');
 });

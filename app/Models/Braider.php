@@ -37,4 +37,9 @@ class Braider extends Model
         return $this->hasMany(Appointment::class);
     }
 
+    public function specialties()
+    {
+        return $this->belongsToMany(Specialty::class, 'braider_specialty');
+    }
+
 }

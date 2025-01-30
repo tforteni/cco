@@ -69,7 +69,7 @@
         <h1>Meet Our Braiders!</h1>
         <p>Would you like to become an affiliated braider?</p>
         <div class="content">
-            <a href="https://docs.google.com/forms/d/1nvGWk25E03dRNKYdREjYN4GSisgcjDaBZ2-hDDnjxc4/edit?usp=sharing" target="_blank">
+            <a href="{{ url('/profile#role-management') }}" class="text-indigo-600 hover:underline font-semibold">
                 Become an Affiliated Braider
             </a>
         </div>
