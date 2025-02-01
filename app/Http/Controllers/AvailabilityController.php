@@ -71,6 +71,22 @@ class AvailabilityController extends Controller
             'location' => 'nullable|string|max:255',
         ]);
 
+        // check for overlapping availability
+        $overlap = Availability::where('braider_id', $braider->id)
+        ->where(function ($query) use ($request) {
+            $query->whereBetween('start_time', [$request->start_time, $request->end_time])
+                  ->orWhereBetween('end_time', [$request->start_time, $request->end_time])
+                  ->orWhereRaw('? BETWEEN start_time AND end_time', [$request->start_time])
+                  ->orWhereRaw('? BETWEEN start_time AND end_time', [$request->end_time]);
+        })
+        ->exists();
+
+        if ($overlap) {
+            return response()->json([
+                'error' => 'You cannot schedule overlapping availability blocks.',
+            ], 422);
+        }
+
         // Save the availability
         $availability = Availability::create([
             'braider_id' => $braider->id, // Use the correct braider_id
