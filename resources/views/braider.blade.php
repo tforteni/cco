@@ -88,7 +88,10 @@
                 contentHeight: 'auto',
                 scrollTime: '08:00:00',
                 slotMinTime: '08:00:00',
-                slotMaxTime: '24:00:00',
+                slotMaxTime: '24:00:00', 
+                validRange: {
+                    start: new Date().toISOString().split('T')[0] // Today's date
+                }
             });
 
             // Handle booking functionality
