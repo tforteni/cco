@@ -5,6 +5,11 @@ use App\Http\Controllers\BraiderController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Models\Braider;
+use App\Http\Middleware\ABTestMiddleware;
+use App\Models\ABTestLog;
+use Illuminate\Http\Request;
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -99,7 +104,7 @@ Route::delete('/availabilities/{id}', [\App\Http\Controllers\AvailabilityControl
     
 // Braider profile with calendar
 Route::get('/braiders/{braider}', [\App\Http\Controllers\AppointmentController::class, 'showBraiderProfile'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', ABTestMiddleware::class ])
     ->name('braider.profile');
 
 Route::post('/appointments', [\App\Http\Controllers\AppointmentController::class, 'store'])
@@ -109,3 +114,21 @@ Route::post('/appointments', [\App\Http\Controllers\AppointmentController::class
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::post('/log-ab-click', function (Request $request) {
+    ABTestLog::create([
+        'user_id' => auth()->id(),
+        'test_name' => 'fullcalendar_view_test',
+        'variation' => $request->variation,
+        'action' => 'click'
+    ]);
+    return response()->json(['message' => 'Click logged']);
+});
+
+Route::get('/ab-test-results', function () {
+    $results = ABTestLog::select('variation', 'action', DB::raw('COUNT(*) as count'))
+        ->groupBy('variation', 'action')
+        ->get();
+
+    return view('ab-test-results', ['results' => $results]);
+});

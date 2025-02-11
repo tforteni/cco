@@ -42,6 +42,7 @@ class AppointmentController extends Controller
         return view('braider', [
             'braider' => $braider,
             'availabilities' => $availabilitiesJson->toJson(), // Pass JSON to the view
+            'calendarVariation' => request('abTests.fullcalendar_view_test', 'timeGridWeek'), // Use the assigned variation
         ]);
     }
 
@@ -89,6 +90,14 @@ class AppointmentController extends Controller
 
         Mail::to($userEmail)->send(new AppointmentConfirmation($appointment));
         Mail::to($braiderEmail)->send(new BraiderAppointmentConfirmation($appointment));
+
+        Log::info("A/B Test: User {$userId} assigned to {$test_name}: {$hashedVariations[$test_name]}");
+        ABTestLog::create([
+            'user_id' => auth()->id(),
+            'test_name' => 'fullcalendar_view_test',
+            'variation' => request('abTests.fullcalendar_view_test'),
+            'action' => 'booking'
+        ]);
 
         // Return response
         return response()->json([
