@@ -40,6 +40,15 @@ class AppointmentController extends Controller
             ];
         });
 
+        // Log Page Visit for A/B Testing
+        ABTestLog::create([
+            'user_id' => auth()->id(),
+            'test_name' => 'fullcalendar_view_test',
+            'variation' => session('abTests.fullcalendar_view_test', 'timeGridWeek'),
+            'action' => 'page_visit'
+        ]);
+
+
         // Pass data to the view
         return view('braider', [
             'braider' => $braider,
