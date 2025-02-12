@@ -70,13 +70,15 @@
         document.addEventListener('DOMContentLoaded', function () {
             const fullCalendarEl = document.getElementById('fullCalendar');
             const calendar = new FullCalendar.Calendar(fullCalendarEl, {
-                initialView: 'timeGridWeek',
+                initialView: '{{ $calendarVariation }}', // Set the initial view
                 events: {!! $availabilities !!}, // Render the events
                 eventClick: function (info) {
                     if (info.event.title === "Booked Appointment") {
                         alert("This slot is already booked.");
                         return;
                     }
+                    
+                    console.log("A/B Test Click: User clicked a slot on", '{{ $calendarVariation }}');
 
                     // Populate modal with event details
                     document.getElementById('eventId').value = info.event.id; // Set the unique ID
@@ -111,6 +113,7 @@
                         start_time: startTime,
                         finish_time: endTime,
                         event_id: eventId, // Send the unique event ID
+                        variation: '{{ $calendarVariation }}'
                     },
                     success: function (response) {
                         // Remove only the clicked "Available" event

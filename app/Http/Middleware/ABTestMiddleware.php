@@ -14,23 +14,29 @@ class ABTestMiddleware
         // Load A/B test configuration from tests.json
         $tests = json_decode(file_get_contents(storage_path('app/tests.json')), true);
 
-        // Identify the user: Use user_id if logged in, else use IP
+        // Identify the user
         $userId = $request->user() ? $request->user()->id : $request->ip();
         $hashedVariations = [];
 
         foreach ($tests as $test_name => $test) {
-            // Generate a consistent hash for each user and test
-            $hash = crc32($userId . $test_name); 
-            $variationIndex = $hash % count($test['variations']); // Get a variation index
-            $hashedVariations[$test_name] = $test['variations'][$variationIndex];
+            if (!isset($test['variations']) || empty($test['variations'])) {
+                Log::error("A/B Test Error: Test '{$test_name}' has no variations defined.");
+                continue;
+            }
+
+            // Generate a hash-based variation
+            $hash = crc32($userId . $test_name);
+            $variationIndex = $hash % count($test['variations']);
+            $hashedVariations[$test_name] = $test['variations'][$variationIndex] ?? 'timeGridWeek';
 
             Log::info("A/B Test: User {$userId} assigned to {$test_name}: {$hashedVariations[$test_name]}");
-
         }
 
-        // Attach the assigned variations to the request
+        // Merge variations with the request and session
         $request->merge(['abTests' => $hashedVariations]);
+        session(['abTests' => $hashedVariations]); // Store in session
 
         return $next($request);
     }
 }
+
