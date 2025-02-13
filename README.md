@@ -1,3 +1,28 @@
+
+# Milestone 1 
+
+## A/B Testing for Booking Flow
+
+### Overview
+We conducted an A/B test to compare different calendar views for booking appointments. The goal was to determine which version led to more user engagement and bookings.
+
+### Metrics Tracked
+1. **Page Visits (`page_visit`)** – Tracks how many users viewed the braider's profile page.
+2. **Bookings (`booking`)** – Tracks how many users successfully booked a time slot.
+
+### Implementation
+- A middleware assigns each user a test variation (`fullcalendar_view_test`).
+- The `page_visit` event is logged when users visit a braider’s profile.
+- The `booking` event is logged when users successfully book an appointment.
+- Logs are stored in the `ab_test_logs` table for analysis.
+
+### Next Steps
+Future improvements could include:
+- Tracking time spent on the page.
+- Measuring user interactions with the calendar.
+- Analyzing drop-off rates for users who viewed but did not book.
+
+
 ## Setting Up the Application from Scratch
 
 Follow these steps to set up and run the application for the first time on a local environment:

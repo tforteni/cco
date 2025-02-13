@@ -106,6 +106,7 @@ class AppointmentController extends Controller
         $userId = auth()->id(); 
         $variation = $request->input('variation', session('abTests.fullcalendar_view_test', 'timeGridWeek')); 
 
+        // Log the A/B test assignment booked
         Log::info("A/B Test: User {$userId} assigned to: " . $variation);
         
         ABTestLog::create([
