@@ -1,7 +1,8 @@
-@extends('layouts.app') <!-- Use the main app layout -->
-
-@section('content')
+<x-layout>
     <h2>Manage Your Availability</h2>
+    
+    <!-- Debugging: Show the CSRF token -->
+    <p>CSRF Token: {{ csrf_token() }}</p>
 
     <!-- Calendar -->
     <div id="calendar"></div>
@@ -39,73 +40,80 @@
             </div>
         </div>
     </div>
-@endsection
 
-@push('scripts')
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridWeek',
-                selectable: true,
-                events: @json($availabilities).map(event => ({
-                    id: event.id,
-                    title: event.location ? `Available - ${event.location}` : 'Available',
-                    start: event.start_time,
-                    end: event.end_time,
-                    backgroundColor: '#28a745',
-                    borderColor: '#28a745',
-                })),
-                select: function (info) {
-                    document.getElementById('start_time').value = info.startStr;
-                    document.getElementById('end_time').value = info.endStr;
-                    var modal = new bootstrap.Modal(document.getElementById('availabilityModal'));
-                    modal.show();
-                },
-                eventClick: function (info) {
-                    if (confirm("Do you want to delete this availability?")) {
-                        $.ajax({
-                            url: '/availabilities/' + info.event.id,
-                            type: 'DELETE',
-                            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                            success: function () {
-                                info.event.remove();
-                                alert('Availability deleted successfully.');
-                            },
-                            error: function () {
-                                alert('Failed to delete availability.');
-                            }
-                        });
-                    }
-                },
-            });
-
-            calendar.render();
-
-            $('#availabilityForm').on('submit', function (e) {
-                e.preventDefault();
-                $.ajax({
-                    url: '/availabilities',
-                    type: 'POST',
-                    data: $(this).serialize(),
-                    success: function (response) {
-                        calendar.addEvent({
-                            id: response.id,
-                            title: response.location ? `Available - ${response.location}` : 'Available',
-                            start: response.start_time,
-                            end: response.end_time,
-                            backgroundColor: '#28a745',
-                            borderColor: '#28a745',
-                        });
-                        bootstrap.Modal.getInstance(document.getElementById('availabilityModal')).hide();
+    @push('scripts')
+        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'timeGridWeek',
+                    selectable: true,
+                    events: @json($availabilities).map(event => ({
+                        id: event.id,
+                        title: event.location ? `Available - ${event.location}` : 'Available',
+                        start: event.start_time,
+                        end: event.end_time,
+                        backgroundColor: '#28a745',
+                        borderColor: '#28a745',
+                    })),
+                    select: function (info) {
+                        document.getElementById('start_time').value = info.startStr;
+                        document.getElementById('end_time').value = info.endStr;
+                        var modal = new bootstrap.Modal(document.getElementById('availabilityModal'));
+                        modal.show();
                     },
-                    error: function () {
-                        alert('Failed to save availability.');
+                    eventClick: function (info) {
+                        if (confirm('{{ __('Do you want to delete this availability?') }}')) {
+                            $.ajax({
+                                url: '/availabilities/' + info.event.id,
+                                type: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                                    'Content-Type': 'application/json'
+                                },
+                                data: JSON.stringify({
+                                    _method: 'DELETE'
+                                }),
+                                success: function () {
+                                    info.event.remove();
+                                    alert('{{ __('Availability deleted successfully.') }}');
+                                },
+                                error: function (xhr) {
+                                    console.log(xhr.responseText);
+                                    alert('{{ __('Failed to delete availability.') }}');
+                                }
+                            });
+                        }
                     },
                 });
+
+                calendar.render();
+
+                $('#availabilityForm').on('submit', function (e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: '/availabilities',
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            calendar.addEvent({
+                                id: response.id,
+                                title: response.location ? `Available - ${response.location}` : 'Available',
+                                start: response.start_time,
+                                end: response.end_time,
+                                backgroundColor: '#28a745',
+                                borderColor: '#28a745',
+                            });
+                            bootstrap.Modal.getInstance(document.getElementById('availabilityModal')).hide();
+                        },
+                        error: function () {
+                            alert('Failed to save availability.');
+                        },
+                    });
+                });
             });
-        });
-    </script>
-@endpush
+        </script>
+    @endpush
+</x-layout>
