@@ -8,6 +8,7 @@ use App\Models\Braider;
 use App\Http\Middleware\ABTestMiddleware;
 use App\Models\ABTestLog;
 use Illuminate\Http\Request;
+use App\Jobs\LogABTestEvent;
 
 
 
@@ -115,15 +116,23 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Route::post('/log-ab-click', function (Request $request) {
+//     ABTestLog::create([
+//         'user_id' => auth()->id(),
+//         'test_name' => 'fullcalendar_view_test',
+//         'variation' => $request->variation,
+//         'action' => 'click'
+//     ]);
+//     return response()->json(['message' => 'Click logged']);
+// });
+
+// A/B Test logs are processed in a background queue instead of being logged immediately.
+// This is done by dispatching a job to log the A/B test event.
 Route::post('/log-ab-click', function (Request $request) {
-    ABTestLog::create([
-        'user_id' => auth()->id(),
-        'test_name' => 'fullcalendar_view_test',
-        'variation' => $request->variation,
-        'action' => 'click'
-    ]);
+    dispatch(new LogABTestEvent(auth()->id(), $request->variation, 'click'));
     return response()->json(['message' => 'Click logged']);
 });
+
 
 Route::get('/ab-test-results', function () {
     $results = ABTestLog::select('variation', 'action', DB::raw('COUNT(*) as count'))

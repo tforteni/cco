@@ -1,0 +1,49 @@
+services:
+  laravel-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - .:/var/www
+      - .env:/var/www/.env  # Ensure Laravel always has access to .env
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker.Dockerfile
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: always
+    volumes:
+      - .:/var/www
+      - .env:/var/www/.env 
+    command: ["php", "artisan", "queue:work", "--tries=3", "--timeout=90"]
+
+  redis:
+    image: redis:alpine
+
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 3
+      timeout: 5s
+
+volumes:
+  db-data:
