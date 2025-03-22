@@ -34,6 +34,15 @@ return new class extends Migration
             if (Schema::hasColumn('availabilities', 'booked')) {
                 $table->dropColumn('booked');
             }
+            if (Schema::hasColumn('availabilities', 'date')) {
+                $table->dropColumn('date');
+            }
+            if (Schema::hasColumn('availabilities', 'phone_number')) {
+                $table->dropColumn('phone_number');
+            }
+            if (Schema::hasColumn('availabilities', 'booked')) {
+                $table->dropColumn('booked');
+            }
         });
     }
 };

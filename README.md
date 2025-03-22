@@ -23,6 +23,37 @@ Future improvements could include:
 - Analyzing drop-off rates for users who viewed but did not book.
 
 
+
+## REPOSITORY STRUCTURE
+```
+/cco
+│── app/                 # Application logic (Models, Controllers, Middleware, etc.)
+│── bootstrap/           # Laravel framework bootstrapping
+│── config/              # Configuration files
+│── database/            # Migrations, seeders, factories
+│── public/              # Entry point (index.php) and assets (CSS, JS, images)
+│── resources/           # Views, language files, and raw assets
+│── routes/              # Web, API, Console, and Channel route files
+│── storage/             # Logs, cache, sessions, and file storage
+│── tests/               # Unit and feature tests
+│── .editorconfig        # Editor configuration
+│── .env.example         # Example environment variables
+│── .gitattributes       # Git attributes configuration
+│── .gitignore           # Git ignore file
+│── README.md            # Project documentation
+│── artisan              # Artisan CLI tool
+│── composer.json        # PHP dependencies
+│── composer.lock        # Composer lock file
+│── package.json         # Node dependencies
+│── package-lock.json    # Node lock file
+│── tailwind.config.js   # Tailwind CSS config
+│── phpunit.xml          # PHPUnit config
+│── postcss.config.js    # PostCSS config
+│── .config.js           # Additional JS configuration
+```
+
+
+
 ## Setting Up the Application from Scratch
 
 Follow these steps to set up and run the application for the first time on a local environment:

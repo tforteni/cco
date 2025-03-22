@@ -50,6 +50,12 @@ class ProfileController extends Controller
         ];
 
         $newRole = $request->input('role');
+        $user = $request->user();
+
+        // Prevent switching back to "member" if the current role is "braider"
+        if ($user->role === 'braider' && $newRole === 'member') {
+            return redirect()->route('profile.edit')->withErrors(['role' => 'Once you become a Braider, you cannot switch back to Member.']);
+        }
 
         // Additional validation rules for braider-specific fields
         if ($newRole === 'braider') {
@@ -58,12 +64,12 @@ class ProfileController extends Controller
                 'headshot' => 'required|image|max:2048', // Headshot file validation
                 'min_price' => 'required|numeric|min:0',
                 'max_price' => 'required|numeric|gte:min_price',
+                'specialties' => 'required|array',
+                'specialties.*' => 'exists:specialties,id',
             ]);
         }
 
         $request->validate($rules);
-
-        $user = $request->user();
 
         // Allow switching to 'admin' only if the current user is already an admin
         if ($newRole === 'admin' && $user->role !== 'admin') {
@@ -92,10 +98,15 @@ class ProfileController extends Controller
 
             $braider->verified = $braider->verified ?? false; // Default verified to false if not already set
             $braider->save();
+            $braider->specialties()->sync($request->input('specialties', [])); // Sync the braider's specialties
+            
         }
 
-        return redirect()->route('profile.edit')->with('status', 'role-switched');
+        return redirect()->route('profile.edit')->with('message', 'Braider profile updated successfully.');
+      
+
     }
+
 
     /**
      * Update specific fields of the braider profile.

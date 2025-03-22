@@ -39,7 +39,7 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <!-- Role Selection -->
+        <!-- Role Selection
         <div class="mt-4">
             <x-input-label for="role" :value="__('Register As')" class="text-tahini font-semibold" />
             <select id="role" name="role" class="block mt-1 w-full bg-light-navy border-dark-tahini text-tahini rounded-md">
@@ -47,7 +47,7 @@
                 <option value="braider" {{ old('role') === 'braider' ? 'selected' : '' }}>Braider</option>
             </select>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
-        </div>
+        </div> -->
 
         <!-- Submit Button -->
         <div class="flex items-center justify-end mt-4 text-tahini font-semibold">
