@@ -1,13 +1,13 @@
-# Use PHP 8.2 instead of PHP 8.1
+# Use PHP 8.2 FPM base
 FROM php:8.2-fpm
 
 # Set working directory
 WORKDIR /var/www
 
-# Update packages and install required dependencies
+# Install system dependencies
 RUN apt-get clean && apt-get update --fix-missing && apt-get install -y \
     iputils-ping \
-    default-mysql-client\
+    default-mysql-client \
     unzip \
     curl \
     git \
@@ -24,14 +24,17 @@ RUN apt-get clean && apt-get update --fix-missing && apt-get install -y \
 # Copy Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy application files
+# Copy the Laravel project files
 COPY . /var/www
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set correct permissions
-RUN chown -R www-data:www-data /var/www
+# Ensure Laravel caches are built
+RUN php artisan config:cache && php artisan route:cache && php artisan view:cache || true
 
-# Run Laravel queue worker
-CMD ["php", "artisan", "queue:work"]
+# Run the Laravel queue worker
+CMD ["php", "artisan", "queue:work", "--tries=3", "--timeout=90"]

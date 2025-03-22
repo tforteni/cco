@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use App\Jobs\LogABTestEvent;
 
 
-
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');

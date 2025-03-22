@@ -1,36 +1,44 @@
+version: "3.8"
+
 services:
   laravel-backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: sielea1/cco-laravel-backend:latest
     ports:
       - "8000:8000"
-    depends_on:
-      database:
-        condition: service_healthy
-      redis:
-        condition: service_started
     volumes:
       - .:/var/www
-      - .env:/var/www/.env  # Ensure Laravel always has access to .env
+      - .env:/var/www/.env
+    networks:
+      - laravel_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
 
   worker:
-    build:
-      context: .
-      dockerfile: worker.Dockerfile
-    depends_on:
-      database:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    restart: always
+    image: sielea1/cco-worker:latest
     volumes:
       - .:/var/www
-      - .env:/var/www/.env 
+      - .env:/var/www/.env
     command: ["php", "artisan", "queue:work", "--tries=3", "--timeout=90"]
+    networks:
+      - laravel_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
 
   redis:
     image: redis:alpine
+    networks:
+      - laravel_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
 
   database:
     image: mysql:8.0
@@ -39,11 +47,17 @@ services:
       MYSQL_DATABASE: laravel
     volumes:
       - db-data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      retries: 3
-      timeout: 5s
+    networks:
+      - laravel_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  laravel_network:
+    driver: overlay
 
 volumes:
   db-data:
