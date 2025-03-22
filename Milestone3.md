@@ -134,4 +134,9 @@ xxxxxxx        cco-worker            Up           9000/tcp             cco-worke
 xxxxxxx        mysql:8.0             Up           3306/tcp, 33060/tcp   cco-database-1
 xxxxxxx        redis:alpine          Up           6379/tcp             cco-redis-1
 ```
-
+### update on Docker Swarm 
+run the following command:
+```bash
+docker stack deploy -c docker-compose.yaml myapplication
+```
+and then open browser on [http://localhost:8000](http://localhost:8000). it should work
