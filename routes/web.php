@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BraiderController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Models\Braider;
@@ -36,6 +37,8 @@ Route::get('/braiders', function () {
 Route::get('/braiders/{braider}', function (Braider $braider) {
     return view('braider', ['braider' => $braider]);
 })->middleware(['auth', 'verified'])->name('braider');
+
+Route::get('/braiders/{id}', [BraiderController::class, 'show'])->name('braiders.show');
 
 // Braider profile
 Route::get('/braider-profile', function () {
@@ -110,9 +113,14 @@ Route::post('/appointments', [\App\Http\Controllers\AppointmentController::class
     ->middleware(['auth', 'verified'])
     ->name('appointments.store');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/appointments/{appointment}/review', [ReviewController::class, 'create'])->name('reviews.create');
+        Route::post('/appointments/{appointment}/review', [ReviewController::class, 'store'])->name('reviews.store');
+    });
+
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'show'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 // Route::post('/log-ab-click', function (Request $request) {
 //     ABTestLog::create([
