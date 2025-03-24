@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppointmentConfirmation;
 use App\Mail\BraiderAppointmentConfirmation;
+use Illuminate\Support\Facades\Log;
+use App\Models\ABTestLog;
 
 
 class AppointmentController extends Controller
@@ -38,10 +40,20 @@ class AppointmentController extends Controller
             ];
         });
 
+        // Log Page Visit for A/B Testing
+        ABTestLog::create([
+            'user_id' => auth()->id(),
+            'test_name' => 'fullcalendar_view_test',
+            'variation' => session('abTests.fullcalendar_view_test', 'timeGridWeek'),
+            'action' => 'page_visit'
+        ]);
+
+
         // Pass data to the view
         return view('braider', [
             'braider' => $braider,
             'availabilities' => $availabilitiesJson->toJson(), // Pass JSON to the view
+            'calendarVariation' => session('abTests.fullcalendar_view_test', 'timeGridWeek'), // Use the assigned variation
         ]);
     }
 
@@ -89,6 +101,20 @@ class AppointmentController extends Controller
 
         Mail::to($userEmail)->send(new AppointmentConfirmation($appointment));
         Mail::to($braiderEmail)->send(new BraiderAppointmentConfirmation($appointment));
+
+
+        $userId = auth()->id(); 
+        $variation = $request->input('variation', session('abTests.fullcalendar_view_test', 'timeGridWeek')); 
+
+        // Log the A/B test assignment booked
+        Log::info("A/B Test: User {$userId} assigned to: " . $variation);
+        
+        ABTestLog::create([
+            'user_id' => auth()->id(),
+            'test_name' => 'fullcalendar_view_test',
+            'variation' => $variation,
+            'action' => 'booking'
+        ]);
 
         // Return response
         return response()->json([

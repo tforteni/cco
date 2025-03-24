@@ -2,7 +2,7 @@
 
 @section('content')
     <h2>Book a Slot with {{ $braider->user->name }}</h2>
-
+    <p> Assigned variation is {{calendarVariation}}</p>
     <div id="calendar"></div>
 
     <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
@@ -34,13 +34,29 @@
             var calendarEl = document.getElementById('calendar');
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridWeek',
+                initialView: '{{ $calendarVariation }}',
                 events: {!! $availabilities !!},
                 eventClick: function(info) {
                     if (info.event.title === "Booked Appointment") {
                         alert("This slot is already booked.");
                         return;
                     }
+
+                    console.log("A/B Test Click: User clicked a slot on", '{{ $calendarVariation }}');
+
+                    // ✅ Send an AJAX request to log clicks
+                    fetch('/log-ab-click', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            variation: '{{ $calendarVariation }}',
+                            event_id: info.event.id
+                        })
+                    });
+
 
                     $('#startTime').val(info.event.startStr);
                     $('#endTime').val(info.event.endStr);

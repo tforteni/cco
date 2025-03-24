@@ -1,0 +1,18 @@
+services:
+  myapplication:
+    image: tiangolo/uvicorn-gunicorn-fastapi:latest
+    environment:
+      PORT: 8123
+      CONTENT: 'this is app --ONE NEW--'
+      CODE: 200
+    networks:
+      - xds-application
+    deploy:
+      replicas: 2
+      update_config:
+        delay: 60s
+        parallelism: 1
+
+networks:
+  xds-application:
+    external: false

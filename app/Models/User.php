@@ -24,6 +24,17 @@ class User extends Authenticatable
         return $this->hasMany(Appointment::class);
     }
 
+    // Reviews that this user has written
+    public function reviewsGiven()
+    {
+        return $this->hasMany(\App\Models\Review::class, 'user_id');
+    }
+
+    // Reviews that this user has received as a braider
+    public function reviewsReceived()
+    {
+        return $this->hasMany(\App\Models\Review::class, 'braider_id');
+    }
 
     /**
      * The attributes that are mass assignable.

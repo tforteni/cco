@@ -42,4 +42,8 @@ class Braider extends Model
         return $this->belongsToMany(Specialty::class, 'braider_specialty');
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'braider_id', 'user_id');
+    }
 }
