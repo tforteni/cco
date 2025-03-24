@@ -13,13 +13,16 @@ test('profile page is displayed', function () {
 });
 
 test('profile information can be updated', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create([
+        'email' => 'original@example.com',
+        'email_verified_at' => now(),
+    ]);
 
     $response = $this
         ->actingAs($user)
         ->patch('/profile', [
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'updated@example.com', // <-- different from the original
         ]);
 
     $response
@@ -29,9 +32,10 @@ test('profile information can be updated', function () {
     $user->refresh();
 
     $this->assertSame('Test User', $user->name);
-    $this->assertSame('test@example.com', $user->email);
+    $this->assertSame('updated@example.com', $user->email);
     $this->assertNull($user->email_verified_at);
 });
+
 
 test('email verification status is unchanged when the email address is unchanged', function () {
     $user = User::factory()->create();
