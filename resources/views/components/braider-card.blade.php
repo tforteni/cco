@@ -63,6 +63,28 @@
         <p class="text-tahini">{{ $braider->bio }}</p>
         <!-- <p class="text-tahini">Specialty: Box braids and cornrows</p> -->
         <p class="text-tahini">Price range:${{ $braider->min_price }} ~ ${{ $braider->max_price }}</p>
+        @if ($braider->user->reviewsReceived->count())
+        <div class="mt-4 bg-white/90 dark:bg-gray-800/80 p-4 rounded shadow text-gray-900 dark:text-gray-100">
+            <h3 class="text-lg font-semibold mb-2">⭐ Recent Reviews</h3>
+
+            @foreach ($braider->user->reviewsReceived->take(2) as $review)
+                <div class="mb-3">
+                    <p class="text-sm font-semibold text-yellow-500">Rating: {{ $review->rating }}/10</p>
+                    <p class="text-sm italic">"{{ $review->comment }}"</p>
+                    <p class="text-xs text-gray-500 mt-1">— {{ $review->user->name }}</p>
+                </div>
+            @endforeach
+
+            @if ($braider->user->reviewsReceived->count() > 2)
+                <a href="/braiders/{{ $braider->id }}#reviews" class="text-sm text-indigo-500 hover:underline">
+                    View all reviews
+                </a>
+            @endif
+        </div>
+    @else
+        <p class="text-tahini text-sm mt-4 italic">No reviews yet</p>
+    @endif
+
         <!-- <p class="text-tahini">Usual availability: Weekday evenings</p> -->
     </div>
     </a>

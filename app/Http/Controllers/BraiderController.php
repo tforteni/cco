@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Braider;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -118,6 +119,18 @@ class BraiderController extends Controller
 
             return redirect()->back()->withErrors(['error' => 'An unexpected error occurred. Please try again.']);
         }
+    }
+
+    public function show($id)
+    {
+        $braider = Braider::with(['user.reviewsReceived.user'])->findOrFail($id);
+
+        // You can also load availability here if needed
+        $availabilities = []; // Add your logic
+
+        $calendarVariation = session('abTests.fullcalendar_view_test', 'timeGridWeek');
+
+        return view('braider', compact('braider', 'availabilities', 'calendarVariation'));
     }
 
 
