@@ -70,16 +70,21 @@
         <p>Discover the talented braiders who are part of our community. Each braider brings their unique style and expertise to create beautiful hairstyles just for you.</p>
         
         <!-- Searchable Hairstyle Filter -->
-        <div class="px-4 py-6 bg-[#0d1725] text-[#f7ebcb] text-center">
-            <h2 class="text-xl font-semibold mb-4">What hairstyle are you looking for?</h2>
+        <div class="px-4 py-12 bg-[#0d1725] text-[#f7ebcb] text-center">
+            <h2 class="text-2xl font-semibold mb-6 tracking-wide">Looking for a specific hairstyle?</h2>
+
             <div class="flex justify-center relative">
                 <input 
                     id="hairstyleSearch" 
                     type="text" 
-                    placeholder="Type a hairstyle..." 
-                    class="w-full max-w-md px-4 py-2 rounded border border-[#f7ebcb] bg-transparent text-[#f7ebcb] focus:outline-none"
+                    placeholder="e.g. Box Braids, French Curls..." 
+                    class="w-full max-w-lg px-5 py-3 rounded-lg border border-[#f7ebcb] bg-[#1b2736] text-[#f7ebcb] placeholder-[#ccc] focus:outline-none focus:ring-2 focus:ring-[#f7ebcb]"
                 >
-                <ul id="suggestions" class="absolute top-full left-0 w-full max-w-md bg-white text-black rounded shadow-lg mt-1 hidden z-50"></ul>
+
+                <!-- Suggestions -->
+                <ul id="suggestions" class="absolute top-full left-1/2 transform -translate-x-1/2 w-full max-w-lg bg-white text-black rounded-md shadow-lg mt-2 hidden z-50 overflow-y-auto max-h-60">
+                    <!-- Suggestions injected here -->
+                </ul>
             </div>
         </div>
 
