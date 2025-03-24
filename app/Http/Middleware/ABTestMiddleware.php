@@ -12,9 +12,16 @@ class ABTestMiddleware
     public function handle(Request $request, Closure $next)
     {
         // Load A/B test configuration from tests.json
-        $tests = json_decode(file_get_contents(storage_path('app/tests.json')), true);
+        $path = storage_path('app/tests.json');
 
-        // Identify the user
+        if (!file_exists($path)) {
+            Log::warning("A/B Test file missing: {$path}. No tests will be applied.");
+            $tests = [];
+        } else {
+            $tests = json_decode(file_get_contents($path), true) ?? [];
+        }
+
+        // add  Identify the user
         $userId = $request->user() ? $request->user()->id : $request->ip();
         $hashedVariations = [];
 
