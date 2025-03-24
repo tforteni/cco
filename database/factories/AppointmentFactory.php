@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
+use App\Models\Braider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +18,14 @@ class AppointmentFactory extends Factory
      */
     public function definition(): array
     {
+        $start = now()->subDays(2);
+        $end = now()->subDay();
+    
         return [
-            //
+            'user_id' => User::factory(),
+            'braider_id' => Braider::factory(),
+            'start_time' => $start,
+            'finish_time' => $end,
         ];
     }
 }
