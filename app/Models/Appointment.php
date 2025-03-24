@@ -20,6 +20,12 @@ class Appointment extends Model
         'braider_id',    // Refers to the braider who will provide the service
     ];
 
+    // Cast start and finish times to Carbon datetime objects
+    protected $casts = [
+        'start_time' => 'datetime',
+        'finish_time' => 'datetime',
+    ];
+
     // Relationship with the User model (client)
     public function user()
     {
@@ -30,5 +36,11 @@ class Appointment extends Model
     public function braider()
     {
         return $this->belongsTo(Braider::class, 'braider_id');
+    }
+
+    // The review written about this appointment (if any)
+    public function review()
+    {
+        return $this->hasOne(Review::class, 'appointment_id');
     }
 }
