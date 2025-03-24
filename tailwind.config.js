@@ -13,7 +13,8 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Inter var', ...defaultTheme.fontFamily.sans],
-                schoolbook: ['New Century Schoolbook', 'TeX Gyre Schola', 'serif']
+                schoolbook: ['New Century Schoolbook', 'TeX Gyre Schola', 'serif'],
+                garamond: ['"Cormorant Garamond"', 'serif']
             },
             fontSize: {
                 '2xl': '1rem',
