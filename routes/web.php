@@ -5,6 +5,9 @@ use App\Http\Controllers\BraiderController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Models\Braider;
+use App\Models\Specialty;
+use App\Http\Controllers\AvailabilityController;
+use App\Http\Controllers\BraiderFilterController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,10 +26,27 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
+// Route::get('/braiders', function () {
+//     $braiders = Braider::all();
+//     return view('braiders', ['braiders' => $braiders]);
+// })->middleware(['auth', 'verified'])->name('braiders');
+
 Route::get('/braiders', function () {
     $braiders = Braider::all();
-    return view('braiders', ['braiders' => $braiders]);
+    $specialties = Specialty::all();
+    return view('braiders', compact('braiders', 'specialties'));
 })->middleware(['auth', 'verified'])->name('braiders');
+
+Route::post('/braiders/filter', [BraiderFilterController::class, 'filter'])->name('braiders.filter');
+
+# Route for fetching specialty suggestions for the autocomplete input
+Route::get('/specialty-suggestions', function (Illuminate\Http\Request $request) {
+    $query = $request->query('q');
+    $results = Specialty::where('name', 'like', "%$query%")->limit(10)->get();
+    return response()->json($results);
+})->middleware(['auth', 'verified'])->name('specialties.suggestions');
+
+
 
 Route::get('/braiders/{braider}', function (Braider $braider) {
     return view('braider', ['braider' => $braider]);

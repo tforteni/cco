@@ -67,6 +67,24 @@
     <!-- Header Section -->
     <div class="section-header">
         <h1>Meet Our Braiders!</h1>
+        <p>Discover the talented braiders who are part of our community. Each braider brings their unique style and expertise to create beautiful hairstyles just for you.</p>
+        
+        <!-- Searchable Hairstyle Filter -->
+        <div class="px-4 py-6 bg-[#0d1725] text-[#f7ebcb] text-center">
+            <h2 class="text-xl font-semibold mb-4">What hairstyle are you looking for?</h2>
+            <div class="flex justify-center relative">
+                <input 
+                    id="hairstyleSearch" 
+                    type="text" 
+                    placeholder="Type a hairstyle..." 
+                    class="w-full max-w-md px-4 py-2 rounded border border-[#f7ebcb] bg-transparent text-[#f7ebcb] focus:outline-none"
+                >
+                <ul id="suggestions" class="absolute top-full left-0 w-full max-w-md bg-white text-black rounded shadow-lg mt-1 hidden z-50"></ul>
+            </div>
+        </div>
+
+
+
         <p>Would you like to become an affiliated braider?</p>
         <div class="content">
             <a href="{{ url('/profile#role-management') }}" class="text-indigo-600 hover:underline font-semibold">
@@ -76,7 +94,7 @@
     </div>
 
     <!-- Braiders Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4" style="font-family: 'Cormorant Garamond', serif; background-color: rgb(5, 15, 29); margin-top: 0;">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4" id="braiderList" style="font-family: 'Cormorant Garamond', serif; background-color: rgb(5, 15, 29); margin-top: 0;">
         @foreach($braiders as $braider)
             <x-braider-card :braider="$braider" />
         @endforeach
@@ -101,3 +119,61 @@
         }
     }
 </style>
+
+<script>
+    const input = document.getElementById('hairstyleSearch');
+    const suggestions = document.getElementById('suggestions');
+
+    input.addEventListener('input', function () {
+        const query = this.value;
+
+        if (query.length < 1) {
+            suggestions.innerHTML = '';
+            suggestions.classList.add('hidden');
+            return;
+        }
+
+        fetch(`/specialty-suggestions?q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                suggestions.innerHTML = '';
+                if (data.length === 0) {
+                    suggestions.classList.add('hidden');
+                    return;
+                }
+
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item.name;
+                    li.classList.add('cursor-pointer', 'hover:bg-gray-200', 'px-4', 'py-2');
+                    li.addEventListener('click', () => {
+                        input.value = item.name;
+                        suggestions.innerHTML = '';
+                        suggestions.classList.add('hidden');
+                        fetchBraiders(item.id);
+                        console.log("Selected specialty ID:", item.id);
+
+                    });
+                    suggestions.appendChild(li);
+                });
+
+                suggestions.classList.remove('hidden');
+            });
+    });
+
+    function fetchBraiders(specialtyId) {
+        fetch("{{ route('braiders.filter') }}", {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ specialties: [specialtyId] })
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('braiderList').innerHTML = data.html;
+        });
+    }
+</script>
