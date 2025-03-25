@@ -16,6 +16,7 @@ docker run -it --rm `
   gaiaadm/pumba `
   --log-level info `
   kill --signal SIGKILL re2:^myapplication_worker.*
+```
 
 This command forcefully stopped the myapplication_worker container with a SIGKILL signal.
 
@@ -26,6 +27,7 @@ This command forcefully stopped the myapplication_worker container with a SIGKIL
 ID             NAME                         IMAGE               DESIRED STATE   CURRENT STATE           ERROR
 30ok0k0uqy3r   myapplication_worker.1       cco-worker:latest   Running         Running 24 seconds ago
 zxvyt1h51b2p    \_ myapplication_worker.1   cco-worker:latest   Shutdown        Failed 30 seconds ago   "task: non-zero exit (137)"
+```
 
 ---
 
@@ -85,17 +87,49 @@ Seconds           : 4
 Milliseconds      : 143
 TotalMilliseconds : 4143.9396
 
-### 📋 Outcome
+### Outcome
 
 - During the test, the backend still loaded successfully, though significantly slower (~8.6 seconds).
 - After the 30-second delay ended, response times dropped back to ~4.1 seconds.
 - No errors or timeouts occurred during this test.
 
-✅ **This confirms the system handles latency gracefully, but performance degrades under stress — as expected.**
+**This confirms the system handles latency gracefully, but performance degrades under stress — as expected.**
+
+### 🧪 Extended Latency Test – User Experience
+
+To more thoroughly test the impact of inter-service network delays, we ran a longer `pumba netem` delay of 1000ms for 2 minutes on the `myapplication_laravel-backend` service. During this time, we manually interacted with the app to observe real user experience.
+
+#### Command: 
+
+	```bash
+		docker run -it --rm `
+		>>   --name=pumba `
+		>>   -v "//var/run/docker.sock:/var/run/docker.sock" `
+		>>   gaiaadm/pumba `
+		>>   netem --duration 120s delay --time 2000 re2:^myapplication_database.*
+
+We attempted to mimick a slow database, eg if there was an enormous amount of traffick. 
+
+#### 🔍 Test Actions
+We used a stopwatch to measure how long specific actions took during and after the delay:
+
+| Action              | During Delay (seconds) | After Delay (seconds) |
+|---------------------|------------------------|------------------------|
+| Logging in (Attempt 1)  | 21.99                   | 8.53                   |
+| Logging in (Attempt 2)  | 17.21                   | 12.52                  |
+| Logging in (Attempt 3)  | 16.00                   | 11.52                  |
+
+#### 🔧 Additional Notes
+- During the delay, login was **significantly slower**, ranging from ~16–22 seconds.
+- After the delay expired, login times improved but were still slightly elevated, likely due to temporary caching or service resumption.
+- No application crashes or critical errors occurred.
+- Laravel logs showed **no session or queue-related exceptions**, confirming system resilience under stress.
+
+✅ **Outcome:**  
+Despite degraded performance during the delay window, the site remained usable. This confirms the system is tolerant of temporary network issues between services.
 
 
-## Issues encountered
-### 🐞 Issues Encountered
+## Issues Encountered
 
 1. **Pumba Cannot Connect to Docker Daemon**
    - Encountered multiple instances of:
