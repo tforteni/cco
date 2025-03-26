@@ -22,6 +22,37 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function index(Request $request): View
+    {
+        return view('profile.index', ['user' => $request->user()]);
+    }
+    public function editPassword(Request $request): View
+    {
+        return view('profile.update-password', ['user' => $request->user()]);
+        
+    }
+    
+    public function editRole(Request $request): View
+    {
+        return view('profile.role-switcher', ['user' => $request->user()]);
+    }
+
+    public function editDelete(Request $request): View
+    {
+        return view('profile.delete', ['user' => $request->user()]);
+    }
+
+    public function editBraider(Request $request): View
+    {
+        if ($request->user()->role !== 'braider') {
+            abort(403, 'Only braiders can access this page.');
+        }
+
+        return view('profile.braider-profile', [
+            'user' => $request->user(),
+        ]);
+    }
+
     /**
      * Update the user's profile information.
      */
@@ -41,7 +72,21 @@ class ProfileController extends Controller
             $user->save();
         }
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.index')->with('status', 'profile-updated');
+    }
+
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', 'min:8'],
+        ]);
+
+        $request->user()->update([
+            'password' => bcrypt($request->password),
+        ]);
+
+        return Redirect::route('profile.index')->with('message', 'Password updated successfully!');
     }
 
 
@@ -56,11 +101,11 @@ class ProfileController extends Controller
 
         // Prevent switching back to "member" if the current role is "braider"
         if ($user->role === 'braider' && $newRole === 'member') {
-            return redirect()->route('profile.edit')->withErrors(['role' => 'Once you become a Braider, you cannot switch back to Member.']);
+            return redirect()->route('profile.role')->withErrors(['role' => 'Once you become a Braider, you cannot switch back to Member.']);
         }
 
         // Additional validation rules for braider-specific fields
-        if ($newRole === 'braider') {
+        if ($newRole === 'braider'|| $user->role === 'braider') {
             $rules = array_merge($rules, [
                 'bio' => 'required|string|max:500',
                 'headshot' => 'required|image|max:2048', // Headshot file validation
@@ -75,7 +120,7 @@ class ProfileController extends Controller
 
         // Allow switching to 'admin' only if the current user is already an admin
         if ($newRole === 'admin' && $user->role !== 'admin') {
-            return redirect()->route('profile.edit')->withErrors(['role' => 'Unauthorized to switch to admin role.']);
+            return redirect()->route('profile.role')->withErrors(['role' => 'Unauthorized to switch to admin role.']);
         }
 
         // Update the user's role
@@ -104,9 +149,8 @@ class ProfileController extends Controller
             
         }
 
-        return redirect()->route('profile.edit')->with('message', 'Braider profile updated successfully.');
+        return redirect()->route('profile.index')->with('message', 'Braider profile updated successfully.');
       
-
     }
 
 
@@ -118,7 +162,7 @@ class ProfileController extends Controller
         // Ensure the user is a braider
         $user = $request->user();
         if ($user->role !== 'braider') {
-            return redirect()->route('profile.edit')->withErrors(['role' => 'Unauthorized to update braider fields.']);
+            return redirect()->route('profile.role')->withErrors(['role' => 'Unauthorized to update braider fields.']);
         }
 
         // Fetch the user's braider profile
@@ -154,9 +198,8 @@ class ProfileController extends Controller
 
         $braider->save();
 
-        return redirect()->route('profile.edit')->with('status', 'braider-updated');
+        return redirect()->route('profile.role')->with('status', 'braider-updated');
     }
-
 
 
 

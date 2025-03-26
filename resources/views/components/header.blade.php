@@ -53,7 +53,7 @@
                         <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">
                             Dashboard
                         </a>
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">
+                        <a href="{{ route('profile.index') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">
                             Profile
                         </a>
                         @if (Auth::user()->role === 'braider')
@@ -94,7 +94,7 @@
                     </button>
                     <ul x-show="open" @click.away="open = false" class="mt-2 space-y-1">
                         <li><a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">Dashboard</a></li>
-                        <li><a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">Profile</a></li>
+                        <li><a href="{{ route('profile.index') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">Profile</a></li>
                         @if (Auth::user()->role === 'braider')
                             <li><a href="{{ route('braider.availability') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">Manage Availability</a></li>
                         @endif

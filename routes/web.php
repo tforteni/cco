@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 use App\Jobs\LogABTestEvent;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Models\Specialty;
+use App\Http\Controllers\AvailabilityController;
+use App\Http\Controllers\BraiderFilterController;
 
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
     ->middleware('guest')
@@ -30,21 +33,34 @@ Route::post('/reset-password', [NewPasswordController::class, 'store'])
     ->middleware('guest')
     ->name('password.update');
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/password', [ProfileController::class, 'editPassword'])->name('profile.password');
+    Route::get('/profile/role', [ProfileController::class, 'editRole'])->name('profile.role');
+    Route::get('/profile/delete', [ProfileController::class, 'editDelete'])->name('profile.delete');
+
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+    Route::patch('/profile/role', [ProfileController::class, 'switchRole'])->name('profile.switchRole');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
 
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // route for switching roles
-    Route::patch('/profile/switch-role', [ProfileController::class, 'switchRole'])->name('profile.switchRole');
-    Route::patch('/profile/update-braider-field', [ProfileController::class, 'updateBraiderField'])->name('profile.updateBraiderField');
+//     // route for switching roles
+//     Route::patch('/profile/switch-role', [ProfileController::class, 'switchRole'])->name('profile.switchRole');
+//     Route::patch('/profile/update-braider-field', [ProfileController::class, 'updateBraiderField'])->name('profile.updateBraiderField');
 
-});
+// });
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
@@ -62,10 +78,38 @@ Route::post('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 require __DIR__.'/auth.php';
 
+Route::get('/braider/profile', [ProfileController::class, 'editBraider'])->name('braider.profile.edit');
+Route::patch('/braider/profile', [ProfileController::class, 'updateBraiderField'])->name('braider.profile.update');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/profile/braider', [ProfileController::class, 'editBraider'])->name('braider.manage');
+    Route::patch('/profile/braider', [ProfileController::class, 'updateBraiderField'])->name('braider.update');
+});
+
+Route::patch('/braider/profile/update', [BraiderController::class, 'updateProfile'])->name('braider.updateProfile');
+
+
+// Route::get('/braiders', function () {
+//     $braiders = Braider::all();
+//     return view('braiders', ['braiders' => $braiders]);
+// })->middleware(['auth', 'verified'])->name('braiders');
+
 Route::get('/braiders', function () {
     $braiders = Braider::all();
-    return view('braiders', ['braiders' => $braiders]);
+    $specialties = Specialty::all();
+    return view('braiders', compact('braiders', 'specialties'));
 })->middleware(['auth', 'verified'])->name('braiders');
+
+Route::post('/braiders/filter', [BraiderFilterController::class, 'filter'])->name('braiders.filter');
+
+# Route for fetching specialty suggestions for the autocomplete input
+Route::get('/specialty-suggestions', function (Illuminate\Http\Request $request) {
+    $query = $request->query('q');
+    $results = Specialty::where('name', 'like', "%$query%")->limit(10)->get();
+    return response()->json($results);
+})->middleware(['auth', 'verified'])->name('specialties.suggestions');
+
+
 
 Route::get('/braiders/{braider}', function (Braider $braider) {
     return view('braider', ['braider' => $braider]);

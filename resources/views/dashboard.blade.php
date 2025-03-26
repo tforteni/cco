@@ -6,11 +6,11 @@
     </style>
 
     <div class="max-w-6xl mx-auto px-4 py-24 text-gray-900 dark:text-gray-100"> {{-- Increased top padding to prevent overlap --}}
-        <h2 class="text-4xl font-bold mb-8">Welcome back, {{ auth()->user()->name }}!</h2>
+        <h2 class="text-4xl font-bold text-tahini mb-8">Welcome back, {{ auth()->user()->name }}!</h2>
 
         <!-- Upcoming Appointment -->
         <div class="mb-10">
-            <h3 class="text-2xl font-semibold mb-3">📅 Your Next Appointment</h3>
+            <h3 class="text-2xl text-tahini font-semibold mb-3">📅 Your Next Appointment</h3>
             @if ($nextAppointment)
                 <div class="p-5 bg-white/90 dark:bg-gray-800/80 shadow rounded">
                     <p><strong>Braider:</strong> {{ $nextAppointment->braider->user->name }}</p>
@@ -23,7 +23,7 @@
 
         <!-- Past Appointments -->
         <div class="mb-10">
-            <h3 class="text-2xl font-semibold mb-3">🕓 Past Appointments</h3>
+            <h3 class="text-2xl text-tahini font-semibold mb-3">🕓 Past Appointments</h3>
 
             @forelse ($pastAppointments as $appointment)
                 @if ($appointment->review)
@@ -78,7 +78,7 @@
 
         <!-- Past Hairstyles (Coming Soon) -->
         <div>
-            <h3 class="text-2xl font-semibold mb-3">My Hairstyles (Coming soon)</h3>
+            <h3 class="text-2xl text-tahini font-semibold mb-3">My Hairstyles (Coming soon)</h3>
             <p class="text-gray-400">This will showcase styles you’ve gotten — stay tuned!</p>
         </div>
     </div>
