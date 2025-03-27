@@ -201,4 +201,80 @@
             </div>
         </div>
     </div>
+    <!-- Gallery Section -->
+    <div class="section bg-[#0f172a]">
+        <h2 class="text-3xl font-bold text-center text-tahini mb-8">Our Workshops</h2>
+
+        <div class="glide max-w-6xl mx-auto">
+            <div class="glide__track" data-glide-el="track">
+                <ul class="glide__slides">
+                    {{-- Loop through your workshop images --}}
+                    <li class="glide__slide text-center">
+                        <img src="{{ asset('images/events-gallery/coco-launch/1.jpg') }}" alt="CoCO Launch" class="rounded-lg mx-auto h-64 object-cover shadow-lg mb-4">
+                        <h3 class="text-xl font-semibold text-tahini">CoCO Launch</h3>
+                    </li>
+                    <li class="glide__slide text-center">
+                        <img src="{{ asset('images/events-gallery/coco-launch/2.jpg') }}" alt="CoCO Launch" class="rounded-lg mx-auto h-64 object-cover shadow-lg mb-4">
+                        <h3 class="text-xl font-semibold text-tahini">CoCO Launch</h3>
+                    </li>
+                    <li class="glide__slide text-center">
+                        <img src="{{ asset('images/events-gallery/ec-bazaar/1.jpg') }}" alt="EC Bazaar" class="rounded-lg mx-auto h-64 object-cover shadow-lg mb-4">
+                        <h3 class="text-xl font-semibold text-tahini">EC Bazaar</h3>
+                    </li>
+                    <li class="glide__slide text-center">
+                        <img src="{{ asset('images/events-gallery/workshop-1/1.jpg') }}" alt="Workshop-1" class="rounded-lg mx-auto h-64 object-cover shadow-lg mb-4">
+                        <h3 class="text-xl font-semibold text-tahini">Workshop 1</h3>
+                    </li>
+                    <li class="glide__slide text-center">
+                        <img src="{{ asset('images/events-gallery/workshop-2/1.jpg') }}" alt="Workshop-2" class="rounded-lg mx-auto h-64 object-cover shadow-lg mb-4">
+                        <h3 class="text-xl font-semibold text-tahini">Workshop 2</h3>
+                    </li>
+                    <li class="glide__slide text-center">
+                        <img src="{{ asset('images/events-gallery/workshop-2/2.jpg') }}" alt="Workshop-2" class="rounded-lg mx-auto h-64 object-cover shadow-lg mb-4">
+                        <h3 class="text-xl font-semibold text-tahini">Workshop 2</h3>
+                    </li>
+                    <li class="glide__slide text-center">
+                        <img src="{{ asset('images/events-gallery/workshop-2/3.jpg') }}" alt="Workshop-2" class="rounded-lg mx-auto h-64 object-cover shadow-lg mb-4">
+                        <h3 class="text-xl font-semibold text-tahini">Workshop 2</h3>
+                    </li>
+                    <li class="glide__slide text-center">
+                        <img src="{{ asset('images/events-gallery/coco-bhm-workshop/1.jpg') }}" alt="BHM-Workshop" class="rounded-lg mx-auto h-64 object-cover shadow-lg mb-4">
+                        <h3 class="text-xl font-semibold text-tahini">CoCO BHM Workshop</h3>
+                    </li>
+                    <li class="glide__slide text-center">
+                        <img src="{{ asset('images/events-gallery/coco-bhm-workshop/2.jpg') }}" alt="BHM-Workshop" class="rounded-lg mx-auto h-64 object-cover shadow-lg mb-4">
+                        <h3 class="text-xl font-semibold text-tahini">CoCO BHM Workshop</h3>
+                    </li>
+                    <li class="glide__slide text-center">
+                        <img src="{{ asset('images/events-gallery/coco-bhm-workshop/3.jpg') }}" alt="BHM-Workshop" class="rounded-lg mx-auto h-64 object-cover shadow-lg mb-4">
+                        <h3 class="text-xl font-semibold text-tahini">CoCO BHM Workshop</h3>
+                    </li>
+                    <!-- more slides for other workshops -->
+                </ul>
+            </div>
+
+            <div class="glide__arrows" data-glide-el="controls">
+                <button class="glide__arrow glide__arrow--left" data-glide-dir="<">‹</button>
+                <button class="glide__arrow glide__arrow--right" data-glide-dir=">">›</button>
+            </div>
+        </div>
+    </div>
 </x-layout>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new Glide('.glide', {
+            type: 'carousel',
+            perView: 2,
+            focusAt: 'center',
+            gap: 24,
+            autoplay: 5000,
+            breakpoints: {
+                768: {
+                    perView: 1
+                }
+            }
+        }).mount();
+    });
+</script>
+

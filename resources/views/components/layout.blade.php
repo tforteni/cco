@@ -27,6 +27,11 @@
         <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
         <!-- Add Tom Select JS -->
         <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+        <!-- Glide.js -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide"></script>
+
         <!-- crsf tag -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
