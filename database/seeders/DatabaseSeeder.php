@@ -13,8 +13,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(UserSeeder::class);
-        $this->call(BraiderSeeder::class);
-        $this->call(AvailabilitySeeder::class);
+        $this->call([
+            UserSeeder::class,
+            BraiderSeeder::class,
+            SpecialtySeeder::class,
+        ]);
+
+        if (app()->environment('testing')) {
+            $this->call([
+                AvailabilitySeeder::class,
+            ]);
+        }
     }
+
 }

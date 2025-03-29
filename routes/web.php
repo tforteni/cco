@@ -2,12 +2,20 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BraiderController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\User;
 use App\Models\Braider;
 use App\Models\Specialty;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\BraiderFilterController;
+use App\Http\Middleware\ABTestMiddleware;
+use App\Models\ABTestLog;
+use Illuminate\Http\Request;
+use App\Jobs\LogABTestEvent;
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -24,6 +32,20 @@ Route::middleware('auth')->group(function () {
 
 });
 
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/dashboard');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('status', 'verification-link-sent');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 require __DIR__.'/auth.php';
 
 // Route::get('/braiders', function () {
@@ -51,6 +73,8 @@ Route::get('/specialty-suggestions', function (Illuminate\Http\Request $request)
 Route::get('/braiders/{braider}', function (Braider $braider) {
     return view('braider', ['braider' => $braider]);
 })->middleware(['auth', 'verified'])->name('braider');
+
+Route::get('/braiders/{id}', [BraiderController::class, 'show'])->name('braiders.show');
 
 // Braider profile
 Route::get('/braider-profile', function () {
@@ -118,13 +142,44 @@ Route::delete('/availabilities/{id}', [\App\Http\Controllers\AvailabilityControl
     
 // Braider profile with calendar
 Route::get('/braiders/{braider}', [\App\Http\Controllers\AppointmentController::class, 'showBraiderProfile'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', ABTestMiddleware::class ])
     ->name('braider.profile');
 
 Route::post('/appointments', [\App\Http\Controllers\AppointmentController::class, 'store'])
     ->middleware(['auth', 'verified'])
     ->name('appointments.store');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/appointments/{appointment}/review', [ReviewController::class, 'create'])->name('reviews.create');
+        Route::post('/appointments/{appointment}/review', [ReviewController::class, 'store'])->name('reviews.store');
+    });
+
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'show'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+// Route::post('/log-ab-click', function (Request $request) {
+//     ABTestLog::create([
+//         'user_id' => auth()->id(),
+//         'test_name' => 'fullcalendar_view_test',
+//         'variation' => $request->variation,
+//         'action' => 'click'
+//     ]);
+//     return response()->json(['message' => 'Click logged']);
+// });
+
+// A/B Test logs are processed in a background queue instead of being logged immediately.
+// This is done by dispatching a job to log the A/B test event.
+Route::post('/log-ab-click', function (Request $request) {
+    dispatch(new LogABTestEvent(auth()->id(), $request->variation, 'click'));
+    return response()->json(['message' => 'Click logged']);
+});
+
+
+Route::get('/ab-test-results', function () {
+    $results = ABTestLog::select('variation', 'action', DB::raw('COUNT(*) as count'))
+        ->groupBy('variation', 'action')
+        ->get();
+
+    return view('ab-test-results', ['results' => $results]);
+});

@@ -30,6 +30,10 @@
             @auth
                 <x-top-nav-link href="/braiders" :active="request()->segment(1) == 'braiders' ? true : false">Braiders</x-top-nav-link>
             @endauth
+            <x-top-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
+                Dashboard
+            </x-top-nav-link>
+
         </div>
 
         <!-- Desktop Auth Links -->
@@ -46,7 +50,12 @@
                         <i class="fas fa-caret-down ml-1"></i>
                     </button>
                     <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-navy text-tahini shadow-lg rounded-lg z-50">
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">Profile</a>
+                        <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">
+                            Profile
+                        </a>
                         @if (Auth::user()->role === 'braider')
                             <a href="{{ route('braider.availability') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">Manage Availability</a>
                         @endif
@@ -84,6 +93,7 @@
                         <i class="fas fa-caret-down ml-1"></i>
                     </button>
                     <ul x-show="open" @click.away="open = false" class="mt-2 space-y-1">
+                        <li><a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">Dashboard</a></li>
                         <li><a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">Profile</a></li>
                         @if (Auth::user()->role === 'braider')
                             <li><a href="{{ route('braider.availability') }}" class="block px-4 py-2 text-sm hover:bg-dark-tahini">Manage Availability</a></li>

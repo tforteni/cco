@@ -29,10 +29,14 @@ class ProfileController extends Controller
     {
         // Update user details
         $user = $request->user();
+
+        // Check if the email will change before updating
+        $emailChanged = $request->input('email') !== $user->email;
+
         $user->update($request->validated());
 
-        // Check if the email was updated and reset verification if needed
-        if ($user->isDirty('email')) {
+        // Reset email verification if email changed
+        if ($emailChanged) {
             $user->email_verified_at = null;
             $user->save();
         }
@@ -40,9 +44,7 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-    /**
-     * Switch the user's role.
-     */
+
     public function switchRole(Request $request): RedirectResponse
     {
         $rules = [
