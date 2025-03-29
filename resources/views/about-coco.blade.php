@@ -221,14 +221,14 @@
             <div class="board-member">
                 <img src="{{ asset('images/board-headshots/aileen.jpeg') }}" alt="Aileen Siele">
                 <h3>Aileen Siele</h3>
-                <p>Communications</p>
+                <p>Web Development</p>
             </div>
 
             <!-- Communications 2 -->
             <div class="board-member">
                 <img src="{{ asset('images/board-headshots/vimbisai.jpg') }}" alt="Vimbisai Basvi">
                 <h3>Vimbisai Basvi</h3>
-                <p>Communications</p>
+                <p>Web Development</p>
             </div>
 
             <!-- Equipment Manager -->
