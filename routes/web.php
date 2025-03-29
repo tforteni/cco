@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\User;
 use App\Models\Braider;
+use App\Models\Specialty;
+use App\Http\Controllers\AvailabilityController;
+use App\Http\Controllers\BraiderFilterController;
 use App\Http\Middleware\ABTestMiddleware;
 use App\Models\ABTestLog;
 use Illuminate\Http\Request;
@@ -45,6 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile/role', [ProfileController::class, 'switchRole'])->name('profile.switchRole');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 
 
 Route::get('/', function () {
@@ -87,7 +91,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::patch('/braider/profile/update', [BraiderController::class, 'updateProfile'])->name('braider.updateProfile');
-
 
 // Route::get('/braiders', function () {
 //     $braiders = Braider::all();
