@@ -19,6 +19,7 @@ class BraiderFactory extends Factory
     {
         return [
             'user_id' => User::factory(),  // Assuming you have a UserFactory
+            'bio' => $this->faker->sentence(), // Random bio
             'headshot' => $this->faker->imageUrl(300, 300, 'people', true), // Generate a fake image
             'work_image1' => $this->faker->imageUrl(300, 300, 'fashion', true), // Generate a fake work image
             'work_image2' => $this->faker->imageUrl(300, 300, 'fashion', true), // Generate another fake work image

@@ -18,22 +18,32 @@
         </div>
 
         <!-- Right Column: Reviews Section -->
-        <div class="p-4 space-y-4 text-tahini bg-light-navy rounded-md border-dark-tahini border-2" style="background-color: #121a26;">
-            <div class="flex flex-col items-center">
-                <p class="text-xl font-semibold">Reviews</p> 
-            </div>
-            <div>
-                <p class="font-bold">Kike says:</p>
-                <p class="border-l-4 border-dark-tahini pl-4">Amaya did such a great job with my box braids! Would def recommend!!!</p>
-            </div>
-            <div>
-                <p class="font-bold">Bukola says:</p>
-                <p class="border-l-4 border-dark-tahini pl-4">Super fast service and the braids look great!</p>
-            </div>
-            <div>
-                <p class="font-bold">Arike says:</p>
-                <p class="border-l-4 border-dark-tahini pl-4">Kind of expensive but worth it I think.</p>
-            </div>
+        <div class="flex flex-col items-center text-tahini bg-light-navy rounded-md border-dark-tahini border-2 p-4" style="background-color: #121a26;"
+            <p class="text-xl font-semibold">Reviews</p> 
+     
+
+        @if ($braider->user->reviewsReceived->count())
+            @foreach ($braider->user->reviewsReceived as $review)
+                <div class="mb-4">
+                    <p class="font-bold">{{ $review->user->name }} says:</p>
+                    <p class="border-l-4 border-dark-tahini pl-4 italic">"{{ $review->comment }}"</p>
+                    <p class="text-sm text-gray-400 mt-1">Rating: {{ $review->rating }}/10</p>
+
+                    @if ($review->media1 || $review->media2 || $review->media3)
+                        <div class="flex space-x-2 mt-2">
+                            @foreach (['media1', 'media2', 'media3'] as $media)
+                                @if ($review->$media)
+                                    <img src="{{ asset('storage/' . $review->$media) }}" alt="Review Image"
+                                        class="h-16 w-16 object-cover rounded border">
+                                @endif
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        @else
+            <p class="text-gray-400">No reviews yet — book an appointment to be among the first to share your experience!</p>
+        @endif
         </div>
     </div>
 
@@ -70,13 +80,15 @@
         document.addEventListener('DOMContentLoaded', function () {
             const fullCalendarEl = document.getElementById('fullCalendar');
             const calendar = new FullCalendar.Calendar(fullCalendarEl, {
-                initialView: 'timeGridWeek',
+                initialView: '{{ $calendarVariation }}', // Set the initial view
                 events: {!! $availabilities !!}, // Render the events
                 eventClick: function (info) {
                     if (info.event.title === "Booked Appointment") {
                         alert("This slot is already booked.");
                         return;
                     }
+                    
+                    console.log("A/B Test Click: User clicked a slot on", '{{ $calendarVariation }}');
 
                     // Populate modal with event details
                     document.getElementById('eventId').value = info.event.id; // Set the unique ID
@@ -111,6 +123,7 @@
                         start_time: startTime,
                         finish_time: endTime,
                         event_id: eventId, // Send the unique event ID
+                        variation: '{{ $calendarVariation }}'
                     },
                     success: function (response) {
                         // Remove only the clicked "Available" event

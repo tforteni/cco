@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Braider;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,7 +56,7 @@ class BraiderController extends Controller
 
         $braider->save();
 
-        return redirect()->route('profile.edit')->with('status', ucfirst($field) . ' updated successfully!');
+        return redirect()->route('profile.role')->with('status', ucfirst($field) . ' updated successfully!');
     }
 
     /**
@@ -111,7 +112,7 @@ class BraiderController extends Controller
             $braider->specialties()->sync($request->specialties);
 
 
-            return redirect()->route('profile.edit')->with('message', 'Braider profile completed successfully.');
+            return redirect()->route('profile.role')->with('message', 'Braider profile completed successfully.');
         } catch (\Exception $e) {
             // Log the error for debugging
             \Log::error('Error creating braider profile: ' . $e->getMessage());
@@ -119,6 +120,64 @@ class BraiderController extends Controller
             return redirect()->back()->withErrors(['error' => 'An unexpected error occurred. Please try again.']);
         }
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user->role !== 'braider') {
+            abort(403, 'Unauthorized.');
+        }
+
+        $request->validate([
+            'bio' => 'nullable|string|max:500',
+            'headshot' => 'nullable|image|max:2048',
+            'min_price' => 'nullable|numeric|min:0',
+            'max_price' => 'nullable|numeric|gte:min_price',
+            'specialties' => 'nullable|array',
+            'specialties.*' => 'exists:specialties,id',
+        ]);
+
+        $braider = Braider::firstOrNew(['user_id' => $user->id]);
+
+        if ($request->filled('bio')) {
+            $braider->bio = $request->bio;
+        }
+
+        if ($request->filled('min_price')) {
+            $braider->min_price = $request->min_price;
+        }
+
+        if ($request->filled('max_price')) {
+            $braider->max_price = $request->max_price;
+        }
+
+        if ($request->hasFile('headshot')) {
+            $braider->headshot = $request->file('headshot')->store('headshots', 'public');
+        }
+
+        $braider->save();
+
+        if ($request->has('specialties')) {
+            $braider->specialties()->sync($request->specialties);
+        }
+
+        return redirect()->route('profile.index')->with('message', 'Braider profile updated successfully!');
+    }
+
+
+    public function show($id)
+    {
+        $braider = Braider::with(['user.reviewsReceived.user'])->findOrFail($id);
+
+        // You can also load availability here if needed
+        $availabilities = []; // Add your logic
+
+        $calendarVariation = session('abTests.fullcalendar_view_test', 'timeGridWeek');
+
+        return view('braider', compact('braider', 'availabilities', 'calendarVariation'));
+    }
+
 
 
 }
