@@ -92,7 +92,7 @@
 
         <p>Would you like to become an affiliated braider?</p>
         <div class="content">
-            <a href="{{ url('/profile#role-management') }}" class="text-indigo-600 hover:underline font-semibold">
+            <a href="{{ url('/profile/role') }}" class="text-indigo-600 hover:underline font-semibold">
                 Become an Affiliated Braider
             </a>
         </div>

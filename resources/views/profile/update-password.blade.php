@@ -7,7 +7,7 @@
     </a>
 
     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            @include('profile.partials.update-profile-information-form')
+        @include('profile.partials.update-password-form')
     </div>
 </div>
 @include('profile.partials.success-modal')
