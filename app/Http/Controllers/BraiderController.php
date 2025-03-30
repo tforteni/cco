@@ -14,34 +14,45 @@ class BraiderController extends Controller
      */
     private function storeAndCopyToPublic($file, $folder, $oldPath = null)
     {
-        // Delete old file
+        // Delete old image from Laravel storage
         if ($oldPath) {
             $fullStoragePath = storage_path('app/public/' . $oldPath);
-            $fullPublicPath = '/home/u598065493/domains/coilycurlyoffice.com/public_html/storage/' . $oldPath;
     
-            if (file_exists($fullStoragePath)) unlink($fullStoragePath);
-            if (file_exists($fullPublicPath)) unlink($fullPublicPath);
+            if (file_exists($fullStoragePath)) {
+                unlink($fullStoragePath);
+            }
+    
+            // Delete from public HTML only in production
+            if (app()->environment('production')) {
+                $fullPublicPath = '/home/u598065493/domains/coilycurlyoffice.com/public_html/storage/' . $oldPath;
+                if (file_exists($fullPublicPath)) {
+                    unlink($fullPublicPath);
+                }
+            }
         }
     
-        // Store new file
+        // Store new file in Laravel's storage
         $path = $file->store($folder, 'public');
         \Log::info('STORED PATH: ' . $path);
-
     
-        // Ensure target directory exists
-        $targetFolder = dirname('//home/u598065493/domains/coilycurlyoffice.com/public_html/storage/' . $path);
-        if (!file_exists($targetFolder)) {
-            mkdir($targetFolder, 0755, true);
+        // If production, copy it to public_html for live access
+        if (app()->environment('production')) {
+            $targetPath = '/home/u598065493/domains/coilycurlyoffice.com/public_html/storage/' . $path;
+            $targetDir = dirname($targetPath);
+            if (!file_exists($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
+    
+            copy(
+                storage_path('app/public/' . $path),
+                $targetPath
+            );
         }
-    
-        // Copy to public_html
-        copy(
-            storage_path('app/public/' . $path),
-            '/home/u598065493/domains/coilycurlyoffice.com/public_html/storage/' . $path
-        );
     
         return $path;
     }
+    
+
     
     /**
      * Show the form for completing a braider profile.
