@@ -13,6 +13,33 @@ use App\Models\Braider;
 class ProfileController extends Controller
 {
     /**
+     * Copy uploaded file to public_html storage for Hostinger visibility.
+     */
+     
+    private function storeAndCopyToPublic($file, $folder, $oldPath = null)
+    {
+         // Delete old file from both storage and public_html
+        if ($oldPath) {
+            $fullStoragePath = storage_path('app/public/' . $oldPath);
+            $fullPublicPath = '/home/u598065493/public_html/storage/' . $oldPath;
+
+            if (file_exists($fullStoragePath)) {
+                unlink($fullStoragePath);
+            }
+
+            if (file_exists($fullPublicPath)) {
+                unlink($fullPublicPath);
+            }
+        }
+        $path = $file->store($folder, 'public');
+        copy(
+            storage_path('app/public/' . $path),
+            '/home/u598065493/public_html/storage/' . $path
+        );
+        return $path;
+    }
+
+    /**
      * Display the user's profile form.
      */
     public function edit(Request $request): View
@@ -26,12 +53,12 @@ class ProfileController extends Controller
     {
         return view('profile.index', ['user' => $request->user()]);
     }
+
     public function editPassword(Request $request): View
     {
         return view('profile.update-password', ['user' => $request->user()]);
-        
     }
-    
+
     public function editRole(Request $request): View
     {
         return view('profile.role-switcher', ['user' => $request->user()]);
@@ -89,7 +116,6 @@ class ProfileController extends Controller
         return Redirect::route('profile.index')->with('message', 'Password updated successfully!');
     }
 
-
     public function switchRole(Request $request): RedirectResponse
     {
         $rules = [
@@ -105,7 +131,7 @@ class ProfileController extends Controller
         }
 
         // Additional validation rules for braider-specific fields
-        if ($newRole === 'braider'|| $user->role === 'braider') {
+        if ($newRole === 'braider' || $user->role === 'braider') {
             $rules = array_merge($rules, [
                 'bio' => 'required|string|max:500',
                 'headshot' => 'required|image|max:2048', // Headshot file validation
@@ -129,7 +155,6 @@ class ProfileController extends Controller
 
         // Handle braider-specific data
         if ($newRole === 'braider') {
-            // Check if the user already has a braider profile
             $braider = Braider::firstOrNew(['user_id' => $user->id]);
 
             // Update braider fields
@@ -139,20 +164,17 @@ class ProfileController extends Controller
 
             // Handle headshot file upload
             if ($request->hasFile('headshot')) {
-                $headshotPath = $request->file('headshot')->store('headshots', 'public'); // Store in the `storage/app/public/headshots` directory
+                $headshotPath = $this->storeAndCopyToPublic($request->file('headshot'), 'headshots', $braider->headshot);
                 $braider->headshot = $headshotPath;
             }
 
-            $braider->verified = $braider->verified ?? false; // Default verified to false if not already set
+            $braider->verified = $braider->verified ?? false;
             $braider->save();
-            $braider->specialties()->sync($request->input('specialties', [])); // Sync the braider's specialties
-            
+            $braider->specialties()->sync($request->input('specialties', []));
         }
 
         return redirect()->route('profile.index')->with('message', 'Braider profile updated successfully.');
-      
     }
-
 
     /**
      * Update specific fields of the braider profile.
@@ -192,7 +214,7 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('headshot')) {
-            $headshotPath = $request->file('headshot')->store('headshots', 'public');
+            $headshotPath = $this->storeAndCopyToPublic($request->file('headshot'), 'headshots', $braider->headshot );
             $braider->headshot = $headshotPath;
         }
 
@@ -200,8 +222,6 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.role')->with('status', 'braider-updated');
     }
-
-
 
     /**
      * Delete the user's account.
