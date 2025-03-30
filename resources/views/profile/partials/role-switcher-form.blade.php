@@ -5,7 +5,7 @@
         @csrf
         @method('PATCH')
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-                @include('profile.partials.braider-update-profile')
+                @include('profile.partials.braider-manage-profile')
         </div>
         
     </form>
