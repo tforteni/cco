@@ -21,3 +21,5 @@ yarn-error.log
 /.vscode
 
 .env copy
+.DS_Store
+.DS_Store
