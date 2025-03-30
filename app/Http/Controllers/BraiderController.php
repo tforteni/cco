@@ -10,6 +10,31 @@ use Illuminate\Support\Facades\Auth;
 class BraiderController extends Controller
 {
     /**
+     * Helper to store uploaded file and copy it to the live public_html folder (Hostinger).
+     */
+    private function storeAndCopyToPublic($file, $folder, $oldPath = null)
+    {
+         // Delete old file from both storage and public_html
+        if ($oldPath) {
+            $fullStoragePath = storage_path('app/public/' . $oldPath);
+            $fullPublicPath = '/home/u598065493/public_html/storage/' . $oldPath;
+
+            if (file_exists($fullStoragePath)) {
+                unlink($fullStoragePath);
+            }
+
+            if (file_exists($fullPublicPath)) {
+                unlink($fullPublicPath);
+            }
+        }
+        $path = $file->store($folder, 'public');
+        copy(
+            storage_path('app/public/' . $path),
+            '/home/u598065493/public_html/storage/' . $path
+        );
+        return $path;
+    }
+    /**
      * Show the form for completing a braider profile.
      */
     public function create()
@@ -47,8 +72,7 @@ class BraiderController extends Controller
 
         if ($field === 'headshot' && $request->hasFile('headshot')) {
             // Handle file upload for the headshot
-            $path = $request->file('headshot')->store('headshots', 'public');
-            $braider->headshot = $path;
+            $braider->headshot = $this->storeAndCopyToPublic($request->file('headshot'), 'headshots', $braider->headshot);
         } else {
             // Update the specified field
             $braider->{$field} = $request->input($field);
@@ -95,14 +119,19 @@ class BraiderController extends Controller
 
         try {
             // Create or update the braider profile
+            $headshot = $this->storeAndCopyToPublic($request->file('headshot'), 'headshots');
+            $work1 = $this->storeAndCopyToPublic($request->file('work_image1'), 'work_images');
+            $work2 = $this->storeAndCopyToPublic($request->file('work_image2'), 'work_images');
+            $work3 = $this->storeAndCopyToPublic($request->file('work_image3'), 'work_images');
+
             $braider = Braider::updateOrCreate(
                 ['user_id' => $user->id],
                 [
                     'bio' => $request->bio,
-                    'headshot' => $request->file('headshot')->store('headshots', 'public'),
-                    'work_image1' => $request->file('work_image1')->store('work_images', 'public'),
-                    'work_image2' => $request->file('work_image2')->store('work_images', 'public'),
-                    'work_image3' => $request->file('work_image3')->store('work_images', 'public'),
+                    'headshot' => $headshot,
+                    'work_image1' => $work1,
+                    'work_image2' => $work2,
+                    'work_image3' => $work3,
                     'min_price' => $request->min_price,
                     'max_price' => $request->max_price,
                 ]
@@ -110,7 +139,6 @@ class BraiderController extends Controller
 
             // Attach selected specialties to the braider
             $braider->specialties()->sync($request->specialties);
-
 
             return redirect()->route('profile.role')->with('message', 'Braider profile completed successfully.');
         } catch (\Exception $e) {
@@ -153,7 +181,7 @@ class BraiderController extends Controller
         }
 
         if ($request->hasFile('headshot')) {
-            $braider->headshot = $request->file('headshot')->store('headshots', 'public');
+            $braider->headshot = $this->storeAndCopyToPublic($request->file('headshot'), 'headshots', $braider->headshot);
         }
 
         $braider->save();
@@ -165,20 +193,18 @@ class BraiderController extends Controller
         return redirect()->route('profile.index')->with('message', 'Braider profile updated successfully!');
     }
 
-
+    /**
+     * Show a specific braider's profile and reviews.
+     */
     public function show($id)
     {
         $braider = Braider::with(['user.reviewsReceived.user'])->findOrFail($id);
 
         // You can also load availability here if needed
-        $availabilities = []; // Add your logic
+        $availabilities = []; // Placeholder for availability data
 
         $calendarVariation = session('abTests.fullcalendar_view_test', 'timeGridWeek');
 
         return view('braider', compact('braider', 'availabilities', 'calendarVariation'));
     }
-
-
-
 }
-
