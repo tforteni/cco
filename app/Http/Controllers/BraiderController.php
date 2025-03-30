@@ -25,6 +25,8 @@ class BraiderController extends Controller
     
         // Store new file
         $path = $file->store($folder, 'public');
+        \Log::info('STORED PATH: ' . $path);
+
     
         // Ensure target directory exists
         $targetFolder = dirname('/home/u598065493/public_html/storage/' . $path);
