@@ -9,6 +9,7 @@ use App\Models\Appointment;
 use App\Models\Braider;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppointmentConfirmation;
+use Carbon\Carbon;
 
 class AvailabilityController extends Controller
 {
@@ -47,8 +48,7 @@ class AvailabilityController extends Controller
         return view('braider-availability', ['availabilities' => $availabilitiesJson]);
     }
 
-
-    // Store availability
+    // Store new availability
     public function store(Request $request)
     {
         // Ensure user is authenticated
@@ -65,21 +65,25 @@ class AvailabilityController extends Controller
 
         // Validate the request
         $request->validate([
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
+            'start_time' => 'required|string',
+            'end_time' => 'required|string',
             'availability_type' => 'required|string',
             'location' => 'nullable|string|max:255',
         ]);
 
-        // check for overlapping availability
+        // Convert datetime strings to MySQL format
+        $start = Carbon::parse($request->start_time)->format('Y-m-d H:i:s');
+        $end = Carbon::parse($request->end_time)->format('Y-m-d H:i:s');
+
+        // Check for overlapping availability
         $overlap = Availability::where('braider_id', $braider->id)
-        ->where(function ($query) use ($request) {
-            $query->whereBetween('start_time', [$request->start_time, $request->end_time])
-                  ->orWhereBetween('end_time', [$request->start_time, $request->end_time])
-                  ->orWhereRaw('? BETWEEN start_time AND end_time', [$request->start_time])
-                  ->orWhereRaw('? BETWEEN start_time AND end_time', [$request->end_time]);
-        })
-        ->exists();
+            ->where(function ($query) use ($start, $end) {
+                $query->whereBetween('start_time', [$start, $end])
+                    ->orWhereBetween('end_time', [$start, $end])
+                    ->orWhereRaw('? BETWEEN start_time AND end_time', [$start])
+                    ->orWhereRaw('? BETWEEN start_time AND end_time', [$end]);
+            })
+            ->exists();
 
         if ($overlap) {
             return response()->json([
@@ -89,9 +93,9 @@ class AvailabilityController extends Controller
 
         // Save the availability
         $availability = Availability::create([
-            'braider_id' => $braider->id, // Use the correct braider_id
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
+            'braider_id' => $braider->id,
+            'start_time' => $start,
+            'end_time' => $end,
             'availability_type' => $request->availability_type,
             'location' => $request->location,
         ]);
