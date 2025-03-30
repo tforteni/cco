@@ -14,26 +14,33 @@ class BraiderController extends Controller
      */
     private function storeAndCopyToPublic($file, $folder, $oldPath = null)
     {
-         // Delete old file from both storage and public_html
+        // Delete old file
         if ($oldPath) {
             $fullStoragePath = storage_path('app/public/' . $oldPath);
             $fullPublicPath = '/home/u598065493/public_html/storage/' . $oldPath;
-
-            if (file_exists($fullStoragePath)) {
-                unlink($fullStoragePath);
-            }
-
-            if (file_exists($fullPublicPath)) {
-                unlink($fullPublicPath);
-            }
+    
+            if (file_exists($fullStoragePath)) unlink($fullStoragePath);
+            if (file_exists($fullPublicPath)) unlink($fullPublicPath);
         }
+    
+        // Store new file
         $path = $file->store($folder, 'public');
+    
+        // Ensure target directory exists
+        $targetFolder = dirname('/home/u598065493/public_html/storage/' . $path);
+        if (!file_exists($targetFolder)) {
+            mkdir($targetFolder, 0755, true);
+        }
+    
+        // Copy to public_html
         copy(
             storage_path('app/public/' . $path),
             '/home/u598065493/public_html/storage/' . $path
         );
+    
         return $path;
     }
+    
     /**
      * Show the form for completing a braider profile.
      */

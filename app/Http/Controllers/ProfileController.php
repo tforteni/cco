@@ -16,28 +16,35 @@ class ProfileController extends Controller
      * Copy uploaded file to public_html storage for Hostinger visibility.
      */
      
-    private function storeAndCopyToPublic($file, $folder, $oldPath = null)
-    {
-         // Delete old file from both storage and public_html
-        if ($oldPath) {
-            $fullStoragePath = storage_path('app/public/' . $oldPath);
-            $fullPublicPath = '/home/u598065493/public_html/storage/' . $oldPath;
-
-            if (file_exists($fullStoragePath)) {
-                unlink($fullStoragePath);
-            }
-
-            if (file_exists($fullPublicPath)) {
-                unlink($fullPublicPath);
-            }
-        }
-        $path = $file->store($folder, 'public');
-        copy(
-            storage_path('app/public/' . $path),
-            '/home/u598065493/public_html/storage/' . $path
-        );
-        return $path;
-    }
+     private function storeAndCopyToPublic($file, $folder, $oldPath = null)
+     {
+         // Delete old file
+         if ($oldPath) {
+             $fullStoragePath = storage_path('app/public/' . $oldPath);
+             $fullPublicPath = '/home/u598065493/public_html/storage/' . $oldPath;
+     
+             if (file_exists($fullStoragePath)) unlink($fullStoragePath);
+             if (file_exists($fullPublicPath)) unlink($fullPublicPath);
+         }
+     
+         // Store new file
+         $path = $file->store($folder, 'public');
+     
+         // Ensure target directory exists
+         $targetFolder = dirname('/home/u598065493/public_html/storage/' . $path);
+         if (!file_exists($targetFolder)) {
+             mkdir($targetFolder, 0755, true);
+         }
+     
+         // Copy to public_html
+         copy(
+             storage_path('app/public/' . $path),
+             '/home/u598065493/public_html/storage/' . $path
+         );
+     
+         return $path;
+     }
+     
 
     /**
      * Display the user's profile form.
