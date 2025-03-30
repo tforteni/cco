@@ -21,7 +21,7 @@ class ProfileController extends Controller
          // Delete old file
          if ($oldPath) {
              $fullStoragePath = storage_path('app/public/' . $oldPath);
-             $fullPublicPath = '/home/u598065493/public_html/storage/' . $oldPath;
+             $fullPublicPath = '/home/u598065493/domains/coilycurlyoffice.com/public_html/storage/' . $oldPath;
      
              if (file_exists($fullStoragePath)) unlink($fullStoragePath);
              if (file_exists($fullPublicPath)) unlink($fullPublicPath);
@@ -32,7 +32,7 @@ class ProfileController extends Controller
          \Log::info('STORED PATH: ' . $path);
      
          // Ensure target directory exists
-         $targetFolder = dirname('/home/u598065493/public_html/storage/' . $path);
+         $targetFolder = dirname('/home/u598065493/domains/coilycurlyoffice.com/public_html/storage/' . $path);
          if (!file_exists($targetFolder)) {
              mkdir($targetFolder, 0755, true);
          }
@@ -40,7 +40,7 @@ class ProfileController extends Controller
          // Copy to public_html
          copy(
              storage_path('app/public/' . $path),
-             '/home/u598065493/public_html/storage/' . $path
+             '/home/u598065493/domains/coilycurlyoffice.com/public_html/storage/' . $path
          );
      
          return $path;
