@@ -46,6 +46,30 @@ class AppointmentController extends Controller
         ]);
     }
 
+    // Cancel Appt
+
+    public function destroy($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+
+        if ($appointment->user_id !== auth()->id()) {
+            abort(403); // or return json
+        }
+
+        // Optional: free up the availability slot
+        if ($appointment->availability_id) {
+            $availability = Availability::find($appointment->availability_id);
+            if ($availability) {
+                $availability->booked = false;
+                $availability->save();
+            }
+        }
+
+        $appointment->delete();
+
+        return redirect()->back()->with('status', 'Appointment cancelled.');
+    }
+
 
     /**
      * Store a new appointment.
@@ -79,6 +103,7 @@ class AppointmentController extends Controller
             'braider_id' => $validated['braider_id'],
             'start_time' => $validated['start_time'],
             'finish_time' => $validated['finish_time'],
+            'availability_id' => $availability->id,
         ]);
 
         // Mark the specific availability slot as booked

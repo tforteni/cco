@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BraiderController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\AppointmentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\User;
@@ -13,6 +14,7 @@ use App\Http\Controllers\BraiderFilterController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
+
 
 
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
@@ -197,3 +199,4 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'sho
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
