@@ -100,8 +100,8 @@ class AppointmentController extends Controller
             'event_id' => $appointment->id,
             'user_name' => $appointment->user->name,
             'braider_name' => $appointment->braider->user->name,
-            'start_time' => $appointment->start_time,
-            'finish_time' => $appointment->finish_time,
+            'start_time' => $appointment->start_time->format('Y-m-d\TH:i:s'),
+            'finish_time' => $appointment->finish_time->format('Y-m-d\TH:i:s'),
         ]);
     }
 }

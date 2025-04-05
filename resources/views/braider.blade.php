@@ -137,6 +137,8 @@
                             backgroundColor: '#dc3545',
                             borderColor: '#dc3545'
                         });
+                        console.log('Booking response:', response);
+
 
                         $('#appointmentModal').modal('hide');
                         alert("Appointment booked successfully!");
