@@ -131,7 +131,7 @@ class AvailabilityController extends Controller
 
                 if ($appointment) {
                     // Send cancellation email to client
-                    Mail::to($appointment->user->email)->send(new AppointmentCancelled($appointment));
+                    Mail::to($appointment->braider->user->email)->send(new AppointmentCancelled($appointment));
 
                     // Delete the appointment
                     $appointment->delete();
@@ -139,6 +139,7 @@ class AvailabilityController extends Controller
             }
 
             $availability->delete();
+
 
             return response()->json(['success' => true, 'message' => 'Availability and any linked appointment deleted.']);
         }

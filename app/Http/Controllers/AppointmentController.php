@@ -9,8 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppointmentConfirmation;
 use App\Mail\BraiderAppointmentConfirmation;
-use App\Mail\AppointmentCancelled;
-
+use App\Mail\AppointmentCancelledByClient;
 use App\Models\User;
 
 
@@ -69,6 +68,8 @@ class AppointmentController extends Controller
                 $availability->save();
             }
         }
+        // Send email notification to the braider
+        Mail::to($appointment->braider->user->email)->send(new AppointmentCancelledByClient($appointment));
 
         // Delete the appointment
         $appointment->delete();

@@ -2,6 +2,8 @@
 
 namespace App\Mail;
 
+use App\Models\Appointment; // add line to import the Appointment model
+use App\Models\Braider;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,41 +15,16 @@ class AppointmentCancelledByClient extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct()
+    public $appointment;
+
+    public function __construct(Appointment $appointment)
     {
-        //
+        $this->appointment = $appointment;
     }
 
-    /**
-     * Get the message envelope.
-     */
-    public function envelope(): Envelope
+    public function build()
     {
-        return new Envelope(
-            subject: 'Appointment Cancelled By Client',
-        );
-    }
-
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        return new Content(
-            view: 'view.name',
-        );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
+        return $this->subject('An Appointment Was Cancelled by the Client')
+                    ->view('emails.appointment_cancelled_by_client');
     }
 }
