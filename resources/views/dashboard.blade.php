@@ -7,6 +7,11 @@
 
     <div class="max-w-6xl mx-auto px-4 py-24 text-gray-900 dark:text-gray-100"> {{-- Increased top padding to prevent overlap --}}
         <h2 class="text-4xl font-bold text-tahini mb-8">Welcome back, {{ auth()->user()->name }}!</h2>
+        @if (session('status'))
+            <div class="mb-6 p-4 bg-green-200 text-green-800 rounded shadow">
+                {{ session('status') }}
+            </div>
+        @endif
 
         <!-- Upcoming Appointment -->
         <div class="mb-10">
@@ -15,6 +20,15 @@
                 <div class="p-5 bg-white/90 dark:bg-gray-800/80 shadow rounded">
                     <p><strong>Braider:</strong> {{ $nextAppointment->braider->user->name }}</p>
                     <p><strong>Date:</strong> {{ $nextAppointment->start_time->format('M d, Y H:i') }}</p>
+                    <form action="{{ route('appointments.destroy', $nextAppointment->id) }}" method="POST" class="mt-4"
+                        onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded shadow">
+                            Cancel Appointment
+                        </button>
+                    </form>
                 </div>
             @else
                 <p class="text-gray-400">You don’t have any upcoming appointments.</p>

@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppointmentConfirmation;
 use App\Mail\BraiderAppointmentConfirmation;
+use App\Mail\AppointmentCancelled;
+
+use App\Models\User;
 
 
 class AppointmentController extends Controller
@@ -46,17 +49,19 @@ class AppointmentController extends Controller
         ]);
     }
 
-    // Cancel Appt
-
+    /**
+     * Delete an availability slot.
+     */
     public function destroy($id)
     {
         $appointment = Appointment::findOrFail($id);
 
+        // Only the user who booked it can delete it
         if ($appointment->user_id !== auth()->id()) {
-            abort(403); // or return json
+            abort(403);
         }
 
-        // Optional: free up the availability slot
+        // Free the availability slot
         if ($appointment->availability_id) {
             $availability = Availability::find($appointment->availability_id);
             if ($availability) {
@@ -65,10 +70,12 @@ class AppointmentController extends Controller
             }
         }
 
+        // Delete the appointment
         $appointment->delete();
 
-        return redirect()->back()->with('status', 'Appointment cancelled.');
+        return redirect()->route('dashboard')->with('status', 'Appointment cancelled successfully.');
     }
+
 
 
     /**
