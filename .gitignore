@@ -8,6 +8,8 @@
 .env.testing
 .env.backup
 .env.production
+.env milestone 4
+.env copy docker
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
