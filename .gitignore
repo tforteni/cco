@@ -23,3 +23,6 @@ yarn-error.log
 
 .env copy
 .DS_Store
+
+.env
+.env.*
