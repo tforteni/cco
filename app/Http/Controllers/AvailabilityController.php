@@ -124,11 +124,16 @@ class AvailabilityController extends Controller
         if (count($availabilities) > 0) {
             $first = $availabilities[0];
             return response()->json([
-                'id' => $first->id,
-                'start_time' => $first->start_time,
-                'end_time' => $first->end_time,
-                'location' => $first->location,
+                'availabilities' => array_map(function ($a) {
+                    return [
+                        'id' => $a->id,
+                        'start_time' => $a->start_time,
+                        'end_time' => $a->end_time,
+                        'location' => $a->location,
+                    ];
+                }, $availabilities),
             ]);
+            
         } else {
             return response()->json([
                 'error' => 'No availability was saved due to overlap.',

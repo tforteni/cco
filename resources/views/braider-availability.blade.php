@@ -146,14 +146,17 @@
                     type: 'POST',
                     data: $(this).serialize(),
                     success: function (response) {
-                        calendar.addEvent({
-                            id: response.id,
-                            title: 'Available' + (response.location ? ' - ' + response.location : ''),
-                            start: response.start_time,
-                            end: response.end_time,
-                            backgroundColor: '#28a745',
-                            borderColor: '#28a745',
+                        response.availabilities.forEach(event => {
+                            calendar.addEvent({
+                                id: event.id,
+                                title: 'Available' + (event.location ? ' - ' + event.location : ''),
+                                start: event.start_time,
+                                end: event.end_time,
+                                backgroundColor: '#28a745',
+                                borderColor: '#28a745',
+                            });
                         });
+
                         var modal = bootstrap.Modal.getInstance(document.getElementById('availabilityModal'));
                         modal.hide();
                         toastr.success('{{ __('Availability saved successfully.') }}');
