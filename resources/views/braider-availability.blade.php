@@ -39,6 +39,15 @@
                                     <option value="recurring">{{ __('Recurring') }}</option>
                                 </select>
                             </div>
+                            <div class="mb-3" id="recurrenceOptions" style="display: none;">
+                                <label for="recurrence" class="form-label">{{ __('Repeat every...') }}</label>
+                                <select id="recurrence" name="recurrence" class="form-select">
+                                    <option value="none">{{ __('Does not repeat') }}</option>
+                                    <option value="daily">{{ __('Daily (for 5 days)') }}</option>
+                                    <option value="weekly">{{ __('Weekly (for 4 weeks)') }}</option>
+                                </select>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="location" class="form-label">{{ __('Location') }}</label>
                                 <input type="text" class="form-control" id="location" name="location" placeholder="Enter location">
@@ -154,6 +163,16 @@
                     },
                 });
             });
+            // Show recurrence dropdown only if "Recurring" is selected
+            $('#availability_type').on('change', function () {
+                if ($(this).val() === 'recurring') {
+                    $('#recurrenceOptions').show();
+                } else {
+                    $('#recurrenceOptions').hide();
+                    $('#recurrence').val('none'); // reset selection
+                }
+            });
+
         });
     </script>
 

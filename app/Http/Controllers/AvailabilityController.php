@@ -49,7 +49,6 @@ class AvailabilityController extends Controller
         return view('braider-availability', ['availabilities' => $availabilitiesJson]);
     }
 
-    // Store new availability
     public function store(Request $request)
     {
         // Ensure user is authenticated
@@ -58,7 +57,7 @@ class AvailabilityController extends Controller
             abort(403, 'Only braiders can manage availability.');
         }
 
-        // Fetch the braider profile associated with the authenticated user
+        // Fetch the braider profile
         $braider = Braider::where('user_id', $user->id)->first();
         if (!$braider) {
             abort(404, 'Braider profile not found.');
@@ -69,44 +68,72 @@ class AvailabilityController extends Controller
             'start_time' => 'required|string',
             'end_time' => 'required|string',
             'availability_type' => 'required|string',
+            'recurrence' => 'nullable|string', // e.g., daily or weekly
             'location' => 'nullable|string|max:255',
         ]);
 
-        // Convert datetime strings to MySQL format
-        $start = Carbon::parse($request->start_time)->format('Y-m-d H:i:s');
-        $end = Carbon::parse($request->end_time)->format('Y-m-d H:i:s');
+        $start = Carbon::parse($request->start_time);
+        $end = Carbon::parse($request->end_time);
+        $availabilityType = $request->availability_type;
+        $recurrence = $request->recurrence ?? 'none'; // default to 'none'
+        $location = $request->location;
 
-        // Check for overlapping availability
-        $overlap = Availability::where('braider_id', $braider->id)
-            ->where(function ($query) use ($start, $end) {
-                $query->whereBetween('start_time', [$start, $end])
-                    ->orWhereBetween('end_time', [$start, $end])
-                    ->orWhereRaw('? BETWEEN start_time AND end_time', [$start])
-                    ->orWhereRaw('? BETWEEN start_time AND end_time', [$end]);
-            })
-            ->exists();
+        // Generate a unique series ID for recurring group
+        $seriesId = ($availabilityType === 'recurring') ? \Str::uuid()->toString() : null;
 
-        if ($overlap) {
-            return response()->json([
-                'error' => 'You cannot schedule overlapping availability blocks.',
-            ], 422);
+        $availabilities = [];
+
+        // Determine how many times to repeat
+        $iterations = match($recurrence) {
+            'daily' => 5,
+            'weekly' => 4,
+            default => 1
+        };
+
+        for ($i = 0; $i < $iterations; $i++) {
+            $currentStart = $start->copy()->addDays($i * ($recurrence === 'weekly' ? 7 : 1));
+            $currentEnd = $end->copy()->addDays($i * ($recurrence === 'weekly' ? 7 : 1));
+
+            // Check for overlaps
+            $overlap = Availability::where('braider_id', $braider->id)
+                ->where(function ($query) use ($currentStart, $currentEnd) {
+                    $query->whereBetween('start_time', [$currentStart, $currentEnd])
+                        ->orWhereBetween('end_time', [$currentStart, $currentEnd])
+                        ->orWhereRaw('? BETWEEN start_time AND end_time', [$currentStart])
+                        ->orWhereRaw('? BETWEEN start_time AND end_time', [$currentEnd]);
+                })
+                ->exists();
+
+            if ($overlap) {
+                // Skip this one, don't break the whole loop
+                continue;
+            }
+
+            $availabilities[] = Availability::create([
+                'braider_id' => $braider->id,
+                'start_time' => $currentStart,
+                'end_time' => $currentEnd,
+                'availability_type' => $availabilityType,
+                'recurrence' => $recurrence,
+                'series_id' => $seriesId,
+                'location' => $location,
+            ]);
         }
 
-        // Save the availability
-        $availability = Availability::create([
-            'braider_id' => $braider->id,
-            'start_time' => $start,
-            'end_time' => $end,
-            'availability_type' => $request->availability_type,
-            'location' => $request->location,
-        ]);
-
-        return response()->json([
-            'id' => $availability->id,
-            'start_time' => $availability->start_time,
-            'end_time' => $availability->end_time,
-            'location' => $availability->location,
-        ]);
+        // Return the first created availability for success response
+        if (count($availabilities) > 0) {
+            $first = $availabilities[0];
+            return response()->json([
+                'id' => $first->id,
+                'start_time' => $first->start_time,
+                'end_time' => $first->end_time,
+                'location' => $first->location,
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'No availability was saved due to overlap.',
+            ], 422);
+        }
     }
 
     // Delete availability
