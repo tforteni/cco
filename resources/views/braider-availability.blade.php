@@ -39,6 +39,15 @@
                                     <option value="recurring">{{ __('Recurring') }}</option>
                                 </select>
                             </div>
+                            <div class="mb-3" id="recurrenceOptions" style="display: none;">
+                                <label for="recurrence" class="form-label">{{ __('Repeat every...') }}</label>
+                                <select id="recurrence" name="recurrence" class="form-select">
+                                    <option value="none">{{ __('Does not repeat') }}</option>
+                                    <option value="daily">{{ __('Daily (for 5 days)') }}</option>
+                                    <option value="weekly">{{ __('Weekly (for 4 weeks)') }}</option>
+                                </select>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="location" class="form-label">{{ __('Location') }}</label>
                                 <input type="text" class="form-control" id="location" name="location" placeholder="Enter location">
@@ -137,14 +146,17 @@
                     type: 'POST',
                     data: $(this).serialize(),
                     success: function (response) {
-                        calendar.addEvent({
-                            id: response.id,
-                            title: 'Available' + (response.location ? ' - ' + response.location : ''),
-                            start: response.start_time,
-                            end: response.end_time,
-                            backgroundColor: '#28a745',
-                            borderColor: '#28a745',
+                        response.availabilities.forEach(event => {
+                            calendar.addEvent({
+                                id: event.id,
+                                title: 'Available' + (event.location ? ' - ' + event.location : ''),
+                                start: event.start_time,
+                                end: event.end_time,
+                                backgroundColor: '#28a745',
+                                borderColor: '#28a745',
+                            });
                         });
+
                         var modal = bootstrap.Modal.getInstance(document.getElementById('availabilityModal'));
                         modal.hide();
                         toastr.success('{{ __('Availability saved successfully.') }}');
@@ -154,6 +166,16 @@
                     },
                 });
             });
+            // Show recurrence dropdown only if "Recurring" is selected
+            $('#availability_type').on('change', function () {
+                if ($(this).val() === 'recurring') {
+                    $('#recurrenceOptions').show();
+                } else {
+                    $('#recurrenceOptions').hide();
+                    $('#recurrence').val('none'); // reset selection
+                }
+            });
+
         });
     </script>
 
