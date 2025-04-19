@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BraiderController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\AppointmentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\User;
@@ -10,12 +11,10 @@ use App\Models\Braider;
 use App\Models\Specialty;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\BraiderFilterController;
-use App\Http\Middleware\ABTestMiddleware;
-use App\Models\ABTestLog;
 use Illuminate\Http\Request;
-use App\Jobs\LogABTestEvent;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
+
 
 
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
@@ -184,7 +183,7 @@ Route::delete('/availabilities/{id}', [\App\Http\Controllers\AvailabilityControl
     
 // Braider profile with calendar
 Route::get('/braiders/{braider}', [\App\Http\Controllers\AppointmentController::class, 'showBraiderProfile'])
-    ->middleware(['auth', 'verified', ABTestMiddleware::class ])
+    ->middleware(['auth', 'verified'])
     ->name('braider.profile');
 
 Route::post('/appointments', [\App\Http\Controllers\AppointmentController::class, 'store'])
@@ -200,28 +199,4 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'sho
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Route::post('/log-ab-click', function (Request $request) {
-//     ABTestLog::create([
-//         'user_id' => auth()->id(),
-//         'test_name' => 'fullcalendar_view_test',
-//         'variation' => $request->variation,
-//         'action' => 'click'
-//     ]);
-//     return response()->json(['message' => 'Click logged']);
-// });
-
-// A/B Test logs are processed in a background queue instead of being logged immediately.
-// This is done by dispatching a job to log the A/B test event.
-Route::post('/log-ab-click', function (Request $request) {
-    dispatch(new LogABTestEvent(auth()->id(), $request->variation, 'click'));
-    return response()->json(['message' => 'Click logged']);
-});
-
-
-Route::get('/ab-test-results', function () {
-    $results = ABTestLog::select('variation', 'action', DB::raw('COUNT(*) as count'))
-        ->groupBy('variation', 'action')
-        ->get();
-
-    return view('ab-test-results', ['results' => $results]);
-});
+Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');

@@ -9,6 +9,7 @@ use App\Models\Appointment;
 use App\Models\Braider;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppointmentConfirmation;
+use App\Mail\AppointmentCancelled;
 use Carbon\Carbon;
 
 class AvailabilityController extends Controller
@@ -111,25 +112,38 @@ class AvailabilityController extends Controller
     // Delete availability
     public function destroy($id)
     {
-        // Ensure user is authenticated
         $user = Auth::user();
         if (!$user || $user->role !== 'braider') {
             abort(403, 'Only braiders can manage availability.');
         }
 
-        // Fetch the braider profile associated with the authenticated user
         $braider = Braider::where('user_id', $user->id)->first();
         if (!$braider) {
             abort(404, 'Braider profile not found.');
         }
 
-        // Fetch the availability to delete
         $availability = Availability::find($id);
+
         if ($availability && $availability->braider_id === $braider->id) {
+            // Check for and delete any linked appointment
+            if ($availability->booked) {
+                $appointment = Appointment::where('availability_id', $availability->id)->first();
+
+                if ($appointment) {
+                    // Send cancellation email to client
+                    Mail::to($appointment->braider->user->email)->send(new AppointmentCancelled($appointment));
+
+                    // Delete the appointment
+                    $appointment->delete();
+                }
+            }
+
             $availability->delete();
-            return response()->json(['success' => true], 200);
+
+
+            return response()->json(['success' => true, 'message' => 'Availability and any linked appointment deleted.']);
         }
 
-        return response()->json(['success' => false], 403);
+        return response()->json(['success' => false, 'message' => 'Unauthorized or not found.'], 403);
     }
 }

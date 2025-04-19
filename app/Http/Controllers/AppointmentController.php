@@ -9,8 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppointmentConfirmation;
 use App\Mail\BraiderAppointmentConfirmation;
-use Illuminate\Support\Facades\Log;
-use App\Models\ABTestLog;
+use App\Mail\AppointmentCancelledByClient;
+use App\Models\User;
 
 
 class AppointmentController extends Controller
@@ -40,22 +40,43 @@ class AppointmentController extends Controller
             ];
         });
 
-        // Log Page Visit for A/B Testing
-        ABTestLog::create([
-            'user_id' => auth()->id(),
-            'test_name' => 'fullcalendar_view_test',
-            'variation' => session('abTests.fullcalendar_view_test', 'timeGridWeek'),
-            'action' => 'page_visit'
-        ]);
-
 
         // Pass data to the view
         return view('braider', [
             'braider' => $braider,
             'availabilities' => $availabilitiesJson->toJson(), // Pass JSON to the view
-            'calendarVariation' => session('abTests.fullcalendar_view_test', 'timeGridWeek'), // Use the assigned variation
         ]);
     }
+
+    /**
+     * Delete an availability slot.
+     */
+    public function destroy($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+
+        // Only the user who booked it can delete it
+        if ($appointment->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Free the availability slot
+        if ($appointment->availability_id) {
+            $availability = Availability::find($appointment->availability_id);
+            if ($availability) {
+                $availability->booked = false;
+                $availability->save();
+            }
+        }
+        // Send email notification to the braider
+        Mail::to($appointment->braider->user->email)->send(new AppointmentCancelledByClient($appointment));
+
+        // Delete the appointment
+        $appointment->delete();
+
+        return redirect()->route('dashboard')->with('status', 'Appointment cancelled successfully.');
+    }
+
 
 
     /**
@@ -90,6 +111,7 @@ class AppointmentController extends Controller
             'braider_id' => $validated['braider_id'],
             'start_time' => $validated['start_time'],
             'finish_time' => $validated['finish_time'],
+            'availability_id' => $availability->id,
         ]);
 
         // Mark the specific availability slot as booked
@@ -104,25 +126,15 @@ class AppointmentController extends Controller
 
 
         $userId = auth()->id(); 
-        $variation = $request->input('variation', session('abTests.fullcalendar_view_test', 'timeGridWeek')); 
 
-        // Log the A/B test assignment booked
-        Log::info("A/B Test: User {$userId} assigned to: " . $variation);
-        
-        ABTestLog::create([
-            'user_id' => auth()->id(),
-            'test_name' => 'fullcalendar_view_test',
-            'variation' => $variation,
-            'action' => 'booking'
-        ]);
 
         // Return response
         return response()->json([
             'event_id' => $appointment->id,
             'user_name' => $appointment->user->name,
             'braider_name' => $appointment->braider->user->name,
-            'start_time' => $appointment->start_time,
-            'finish_time' => $appointment->finish_time,
+            'start_time' => $appointment->start_time->format('Y-m-d\TH:i:s'),
+            'finish_time' => $appointment->finish_time->format('Y-m-d\TH:i:s'),
         ]);
     }
 }

@@ -18,6 +18,7 @@ class Appointment extends Model
         'comments',
         'user_id',       // Refers to the client who booked the appointment
         'braider_id',    // Refers to the braider who will provide the service
+        'availability_id', // Refers to the availability slot booked
     ];
 
     // Cast start and finish times to Carbon datetime objects
