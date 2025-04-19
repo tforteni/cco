@@ -10,3 +10,7 @@ Route::middleware('api')->group(function () {
         return response()->json(['message' => 'Click logged']);
     });
 });
+
+Route::get('/api/genai-style-suggestion', [GenAIController::class, 'suggest']);
+Route::post('/api/genai-style-feedback', [GenAIController::class, 'feedback']);
+
