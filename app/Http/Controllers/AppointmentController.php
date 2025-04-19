@@ -11,6 +11,10 @@ use App\Mail\AppointmentConfirmation;
 use App\Mail\BraiderAppointmentConfirmation;
 use App\Mail\AppointmentCancelledByClient;
 use App\Models\User;
+use App\Services\TwilioService; 
+use App\Jobs\SendAppointmentReminder;
+use Illuminate\Support\Facades\Log;
+
 
 
 class AppointmentController extends Controller
@@ -123,7 +127,29 @@ class AppointmentController extends Controller
 
         Mail::to($userEmail)->send(new AppointmentConfirmation($appointment));
         Mail::to($braiderEmail)->send(new BraiderAppointmentConfirmation($appointment));
+        
+        $phone = $appointment->user->phone;
+        // if (!str_starts_with($phone, '+')) {
+        //     $phone = '+1' . $phone; // Assume US for now
+        // }
+        if (!empty($appointment->user->phone)) {
+            // Send SMS to the user
+            // app(TwilioService::class)->sendSms(
+            //     $phone,
+            //     "Hi {$appointment->user->name}, your appointment with {$appointment->braider->user->name} is confirmed for {$appointment->start_time->format('l, M j \a\t g:i A')}!"
+            // );
+            Log::info("Sending SMS to: $phone");
+            $twilio->messages->create(
+                "whatsapp:+1{$appointment->user->phone}", // add `whatsapp:` prefix
+                [
+                    'from' => 'whatsapp:+YOUR_TWILIO_NUMBER',
+                    'body' => "Hi {$appointment->user->name}, your appointment is confirmed for..."
+                ]
+            );
+        }
 
+        //  Dispatch SMS reminder job 
+        SendAppointmentReminder::dispatch($appointment)->delay(now()->addDay());
 
         $userId = auth()->id(); 
 

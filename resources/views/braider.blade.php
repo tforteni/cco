@@ -61,6 +61,13 @@
                         <input type="hidden" id="eventId" name="event_id">
                         <input type="hidden" id="startTime" name="start_time">
                         <input type="hidden" id="endTime" name="finish_time">
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" id="smsConsent" required>
+                            <label class="form-check-label" for="smsConsent">
+                                I agree to receive text message confirmations and reminders for this appointment.
+                            </label>
+                        </div>
+                    
                     </form>
                 </div>
                 <div class="modal-footer">
