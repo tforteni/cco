@@ -41,10 +41,7 @@ class GenAIController extends Controller
 
         $temperature = ($approach === 'C') ? 0.9 : 0.7;
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . env('GEMINI_API_KEY'),
-            'Content-Type' => 'application/json',
-        ])->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent', [
+        $response = Http::post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . env('GEMINI_API_KEY'), [
             'contents' => [
                 [
                     'parts' => [
@@ -56,10 +53,21 @@ class GenAIController extends Controller
                 'temperature' => $temperature
             ]
         ]);
+        
+        
 
         if ($response->failed()) {
-            return 'Something went wrong with the Gemini API.';
+            return response()->json([
+                'error' => 'Gemini API call failed',
+                'details' => $response->json(), // ← 👀 this will show us exactly what went wrong
+                'status' => $response->status(),
+                'request_payload' => [
+                    'prompt' => $prompt,
+                    'temperature' => $temperature,
+                ]
+            ]);
         }
+        
 
         return $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? 'No response.';
     }

@@ -16,7 +16,10 @@ use Illuminate\Http\Request;
 use App\Jobs\LogABTestEvent;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\GenAIController;
 
+Route::get('/genai-style-suggestion', [GenAIController::class, 'suggest']);
+Route::post('/genai-style-feedback', [GenAIController::class, 'feedback']);
 
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
     ->middleware('guest')
