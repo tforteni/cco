@@ -6,8 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
+
+
 class GenAIController extends Controller
 {
+    public function showGenAIPage()
+    {
+        return view('genai');
+    }
     public function suggest(Request $request)
     {
         $compare = $request->boolean('compare', false);

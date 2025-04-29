@@ -18,6 +18,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\GenAIController;
 
+Route::get('/genai', [GenAIController::class, 'showGenAIPage']);
 Route::get('/genai-style-suggestion', [GenAIController::class, 'suggest']);
 Route::post('/genai-style-feedback', [GenAIController::class, 'feedback']);
 
