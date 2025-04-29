@@ -10,10 +10,33 @@ use Illuminate\Support\Facades\Storage;
 
 class GenAIController extends Controller
 {
-    public function showGenAIPage()
+    public function showGenAIPage(Request $request)
     {
-        return view('genai');
+        $output = null;
+        $comparison = null;
+
+        if ($request->has('approach')) {
+            $output = $this->generate($request->input('approach'));
+        }
+
+        if ($request->has('compare') && $request->boolean('compare')) {
+            $a1 = $request->input('approach1', 'A');
+            $a2 = $request->input('approach2', 'B');
+
+            $comparison = [
+                'id1' => $a1,
+                'response1' => $this->generate($a1),
+                'id2' => $a2,
+                'response2' => $this->generate($a2),
+            ];
+        }
+
+        return view('genai', [
+            'output' => $output,
+            'comparison' => $comparison,
+        ]);
     }
+
     public function suggest(Request $request)
     {
         $compare = $request->boolean('compare', false);
@@ -65,7 +88,7 @@ class GenAIController extends Controller
         if ($response->failed()) {
             return response()->json([
                 'error' => 'Gemini API call failed',
-                'details' => $response->json(), // ← 👀 this will show us exactly what went wrong
+                'details' => $response->json(), //  this shows us exactly what went wrong
                 'status' => $response->status(),
                 'request_payload' => [
                     'prompt' => $prompt,
